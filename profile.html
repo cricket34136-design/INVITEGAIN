@@ -353,7 +353,7 @@
             border-color: rgba(239, 68, 68, 0.3);
         }
 
-        /* Wallet Stats */
+        /* Wallet Stats - UPDATED: Removed Available Balance and Pending Withdraw */
         .wallet-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -388,7 +388,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Wallet Grid */
+        /* Wallet Grid - UPDATED: Removed Pending Withdraw card */
         .wallet-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -764,6 +764,22 @@
             display: none;
         }
 
+        /* Available Balance Display in Modal */
+        .available-balance {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 8px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .available-balance span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
         /* Payment Info */
         .payment-info-card {
             background: rgba(15, 23, 42, 0.5);
@@ -978,7 +994,7 @@
             font-size: 14px;
         }
 
-        /* Responsive Design */
+        /* Mobile Optimizations */
         @media (max-width: 640px) {
             .profile-header {
                 flex-direction: column;
@@ -992,10 +1008,12 @@
             
             .wallet-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
             
             .modal {
                 max-height: 80vh;
+                margin: 10px;
             }
             
             .modal-footer {
@@ -1004,6 +1022,59 @@
             
             .modal-footer .btn {
                 width: 100%;
+            }
+            
+            .transaction-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .transaction-info {
+                width: 100%;
+            }
+            
+            .transaction-meta {
+                flex-direction: column;
+                gap: 4px;
+            }
+            
+            .transaction-amount {
+                align-self: flex-start;
+            }
+            
+            .transaction-status {
+                align-self: flex-start;
+            }
+            
+            .toast {
+                min-width: auto;
+                width: calc(100vw - 40px);
+                margin: 0 20px;
+            }
+            
+            .options-list .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wallet-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .transaction-filters {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            
+            .filter-btn {
+                flex: 1;
+                min-width: 70px;
+                text-align: center;
+                padding: 8px 12px;
+                font-size: 12px;
             }
         }
     </style>
@@ -1041,17 +1112,17 @@
             </div>
         </div>
 
-        <!-- Wallet Stats -->
+        <!-- Wallet Stats - UPDATED: Removed Available Balance and Pending Withdraw cards -->
         <div class="card">
             <div class="section-header">
-                <div class="section-title">Wallet Overview</div>
+                <div class="section-title">Account Overview</div>
                 <button class="section-toggle" onclick="refreshWallet()">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
             <div class="wallet-stats">
                 <div class="stat-card">
-                    <div class="stat-label">Wallet Balance</div>
+                    <div class="stat-label">Account Balance</div>
                     <div class="stat-value" id="walletBalance">0 PKR</div>
                 </div>
                 <div class="stat-card">
@@ -1059,11 +1130,12 @@
                     <div class="stat-value" id="totalEarnings">0 PKR</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Available Balance</div>
-                    <div class="stat-value" id="availableBalance">0 PKR</div>
+                    <div class="stat-label">Total Deposits</div>
+                    <div class="stat-value" id="totalDepositValue">0 PKR</div>
                 </div>
             </div>
             
+            <!-- Wallet Grid - UPDATED: Removed Pending Withdraw card -->
             <div class="wallet-grid">
                 <div class="wallet-item">
                     <div class="wallet-label">Total Deposit</div>
@@ -1074,12 +1146,12 @@
                     <div class="wallet-value" id="totalWithdraw">0 PKR</div>
                 </div>
                 <div class="wallet-item">
-                    <div class="wallet-label">Pending Withdraw</div>
-                    <div class="wallet-value negative" id="pendingWithdraw">0 PKR</div>
-                </div>
-                <div class="wallet-item">
                     <div class="wallet-label">Referral Earnings</div>
                     <div class="wallet-value positive" id="referralEarnings">0 PKR</div>
+                </div>
+                <div class="wallet-item">
+                    <div class="wallet-label">Investment</div>
+                    <div class="wallet-value" id="totalInvestment">0 PKR</div>
                 </div>
             </div>
         </div>
@@ -1096,7 +1168,7 @@
                     </div>
                     <div class="option-content">
                         <div class="option-title">Deposit Funds</div>
-                        <div class="option-desc">Add money to your wallet</div>
+                        <div class="option-desc">Add money to your account</div>
                     </div>
                     <div class="option-arrow">
                         <i class="fas fa-chevron-right"></i>
@@ -1176,6 +1248,19 @@
                     </div>
                 </div>
 
+                <div class="option-item" onclick="openInvestmentHistory()">
+                    <div class="option-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="option-content">
+                        <div class="option-title">Investment History</div>
+                        <div class="option-desc">View your investment records</div>
+                    </div>
+                    <div class="option-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
                 <button class="btn btn-danger" id="logoutBtn" onclick="logoutUser()">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
@@ -1232,6 +1317,9 @@
                     <label for="depositAmount">Amount (PKR)</label>
                     <input type="number" id="depositAmount" placeholder="Enter amount" min="500" step="100">
                     <div class="error-message" id="depositAmountError"></div>
+                    <div class="available-balance">
+                        Current Account Balance: <span id="currentAccountBalance">0</span> PKR
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -1271,7 +1359,7 @@
         </div>
     </div>
 
-    <!-- Withdraw Modal -->
+    <!-- Withdraw Modal - UPDATED: Changed from Available Balance to Account Balance -->
     <div class="modal-overlay" id="withdrawModal">
         <div class="modal">
             <div class="modal-header">
@@ -1286,7 +1374,7 @@
                     <input type="number" id="withdrawAmount" placeholder="Enter amount" min="500">
                     <div class="error-message" id="withdrawAmountError"></div>
                     <div class="available-balance">
-                        Available: <span id="modalAvailableBalance">0</span> PKR
+                        Account Balance: <span id="modalAccountBalance">0</span> PKR
                     </div>
                 </div>
                 
@@ -1360,9 +1448,8 @@
             measurementId: "G-T4RBRVEN1F"
         };
 
-        // 🔥 REPLACE WITH YOUR CLOUDINARY DETAILS
-        const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME_HERE";
-        const CLOUDINARY_UPLOAD_PRESET = "YOUR_UPLOAD_PRESET_HERE";
+        const CLOUDINARY_CLOUD_NAME = "dzcbparia";
+        const CLOUDINARY_UPLOAD_PRESET = "deposit_upload";
 
         // =====================
         // FIREBASE INITIALIZATION
@@ -1480,10 +1567,17 @@
                 }
             });
 
-            // Update available balance when withdraw modal opens
+            // Update account balance when withdraw modal opens
             document.getElementById('withdrawModal').addEventListener('click', (e) => {
                 if (e.target.id === 'withdrawModal' || e.target.closest('.modal')) {
-                    updateAvailableBalanceInModal();
+                    updateAccountBalanceInModal();
+                }
+            });
+
+            // Update account balance when deposit modal opens
+            document.getElementById('depositModal').addEventListener('click', (e) => {
+                if (e.target.id === 'depositModal' || e.target.closest('.modal')) {
+                    updateCurrentAccountBalance();
                 }
             });
 
@@ -1528,6 +1622,8 @@
                     if (doc.exists) {
                         userData = { ...doc.data(), id: userId };
                         updateUI();
+                        updateAccountBalanceInModal();
+                        updateCurrentAccountBalance();
                     }
                 }, (error) => {
                     console.error('User data listener error:', error);
@@ -1555,7 +1651,7 @@
         // =====================
         // UI UPDATES
         // =====================
-        // Update UI with user data
+        // Update UI with user data - UPDATED: Removed Available Balance references
         function updateUI() {
             if (!userData || !currentUser) return;
 
@@ -1576,28 +1672,43 @@
             document.getElementById('userEmail').textContent = currentUser.email;
             document.getElementById('userId').textContent = currentUser.uid.substring(0, 8).toUpperCase();
 
-            // Update wallet stats
-            const balance = userData.walletBalance || 0;
+            // Update wallet stats - UPDATED: Removed Available Balance and Pending Withdraw
+            const balance = userData.accountBalance || 0;
             const earnings = userData.totalEarnings || 0;
             const totalDeposit = userData.totalDeposit || 0;
             const totalWithdraw = userData.totalWithdraw || 0;
-            const pendingWithdraw = userData.pendingWithdraw || 0;
             const referralEarnings = userData.referralEarnings || 0;
-            const available = Math.max(0, balance - pendingWithdraw);
+            const totalInvestment = userData.totalInvestment || 0;
 
             document.getElementById('walletBalance').textContent = `${formatCurrency(balance)} PKR`;
             document.getElementById('totalEarnings').textContent = `${formatCurrency(earnings)} PKR`;
-            document.getElementById('availableBalance').textContent = `${formatCurrency(available)} PKR`;
+            document.getElementById('totalDepositValue').textContent = `${formatCurrency(totalDeposit)} PKR`;
             document.getElementById('totalDeposit').textContent = `${formatCurrency(totalDeposit)} PKR`;
             document.getElementById('totalWithdraw').textContent = `${formatCurrency(totalWithdraw)} PKR`;
-            document.getElementById('pendingWithdraw').textContent = `${formatCurrency(pendingWithdraw)} PKR`;
             document.getElementById('referralEarnings').textContent = `${formatCurrency(referralEarnings)} PKR`;
+            document.getElementById('totalInvestment').textContent = `${formatCurrency(totalInvestment)} PKR`;
 
             // Update status badge
             const statusBadge = document.getElementById('statusBadge');
             const status = userData.status || 'Active';
             statusBadge.textContent = status;
             statusBadge.className = `status-badge status-${status.toLowerCase()}`;
+        }
+
+        // Update account balance in withdraw modal - UPDATED: Changed from Available Balance to Account Balance
+        function updateAccountBalanceInModal() {
+            if (!userData) return;
+            
+            const balance = userData.accountBalance || 0;
+            document.getElementById('modalAccountBalance').textContent = formatCurrency(balance);
+        }
+
+        // Update current account balance in deposit modal
+        function updateCurrentAccountBalance() {
+            if (!userData) return;
+            
+            const balance = userData.accountBalance || 0;
+            document.getElementById('currentAccountBalance').textContent = formatCurrency(balance);
         }
 
         // Update transactions UI
@@ -1687,24 +1798,14 @@
         function updateTransactionStats() {
             if (!transactions.length) return;
 
-            let totalDeposit = 0;
-            let totalWithdraw = 0;
             let pendingDeposit = 0;
             let pendingWithdraw = 0;
 
             transactions.forEach(transaction => {
-                if (transaction.type === 'deposit') {
-                    if (transaction.status === 'completed') {
-                        totalDeposit += transaction.amount || 0;
-                    } else if (transaction.status === 'pending') {
-                        pendingDeposit++;
-                    }
-                } else if (transaction.type === 'withdraw') {
-                    if (transaction.status === 'completed') {
-                        totalWithdraw += transaction.amount || 0;
-                    } else if (transaction.status === 'pending') {
-                        pendingWithdraw++;
-                    }
+                if (transaction.type === 'deposit' && transaction.status === 'pending') {
+                    pendingDeposit++;
+                } else if (transaction.type === 'withdraw' && transaction.status === 'pending') {
+                    pendingWithdraw++;
                 }
             });
 
@@ -1958,17 +2059,8 @@
         }
 
         // =====================
-        // WITHDRAWAL SYSTEM
+        // WITHDRAWAL SYSTEM - UPDATED: Changed from Available Balance to Account Balance
         // =====================
-        // Update available balance in withdraw modal
-        function updateAvailableBalanceInModal() {
-            if (!userData) return;
-            const balance = userData.walletBalance || 0;
-            const pendingWithdraw = userData.pendingWithdraw || 0;
-            const available = Math.max(0, balance - pendingWithdraw);
-            document.getElementById('modalAvailableBalance').textContent = formatCurrency(available);
-        }
-
         // Submit withdrawal
         async function submitWithdraw() {
             if (!currentUser) {
@@ -2004,10 +2096,11 @@
 
             if (!isValid) return;
 
-            // Check available balance
-            const available = (userData.walletBalance || 0) - (userData.pendingWithdraw || 0);
-            if (amount > available) {
-                showError('withdrawAmount', 'Insufficient available balance');
+            // Check account balance
+            const accountBalance = userData.accountBalance || 0;
+
+            if (amount > accountBalance) {
+                showError('withdrawAmount', 'Insufficient account balance');
                 return;
             }
 
@@ -2034,9 +2127,9 @@
                 // Add to transactions collection
                 await db.collection('transactions').add(withdrawData);
 
-                // Update user's pending withdrawals
+                // Update user's account balance
                 await db.collection('users').doc(currentUser.uid).update({
-                    pendingWithdraw: firebase.firestore.FieldValue.increment(amount)
+                    accountBalance: firebase.firestore.FieldValue.increment(-amount)
                 });
 
                 showToast('success', 'Withdrawal Submitted', 'Your withdrawal request has been submitted for review');
@@ -2144,6 +2237,11 @@
             });
         }
 
+        // Open investment history
+        function openInvestmentHistory() {
+            showToast('info', 'Coming Soon', 'Investment history feature coming soon!');
+        }
+
         // Show notifications
         function showNotifications() {
             if (pendingNotifications === 0) {
@@ -2175,7 +2273,7 @@
         async function refreshWallet() {
             if (currentUser) {
                 await loadUserData(currentUser.uid);
-                showToast('success', 'Refreshed', 'Wallet data updated');
+                showToast('success', 'Refreshed', 'Account data updated');
             }
         }
 
@@ -2208,11 +2306,12 @@
             document.getElementById(modalId).classList.add('active');
             if (modalId === 'depositModal') {
                 updatePaymentInfo();
+                updateCurrentAccountBalance();
                 // Reset receipt preview
                 document.getElementById('receiptPreview').style.display = 'none';
                 cloudinaryReceiptUrl = '';
             } else if (modalId === 'withdrawModal') {
-                updateAvailableBalanceInModal();
+                updateAccountBalanceInModal();
             }
         }
 

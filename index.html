@@ -902,100 +902,100 @@
             }
         }
 
-        async function handleRegisterSubmit(event) {
-            event.preventDefault();
-            
-            if (!validateRegisterForm()) {
-                showToast('error', 'Validation Error', 'Please fix the errors in the form');
-                return;
-            }
-            
-            const formData = {
-                fullName: document.getElementById('fullName').value.trim(),
-                username: document.getElementById('username').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                password: document.getElementById('password').value.trim(),
-                referralCode: document.getElementById('referralCode').value.trim() || null
-            };
-            
-            setLoading(registerBtn, true);
-            
-            try {
-                // Create user in Firebase Auth
-                const userCredential = await auth.createUserWithEmailAndPassword(
-                    formData.email, 
-                    formData.password
-                );
-                
-                const user = userCredential.user;
-                
-                // Generate referral code for the user
-                const userReferralCode = generateReferralCode(formData.username);
-                
-                // Store additional user data in Firestore
-                await db.collection('users').doc(user.uid).set({
-                    uid: user.uid,
-                    fullName: formData.fullName,
-                    username: formData.username,
-                    email: formData.email,
-                    phone: formData.phone,
-                    referralCode: userReferralCode,
-                    referredBy: formData.referralCode || null,
-                    accountBalance: 0,
-                    referralEarnings: 0,
-                    totalReferrals: 0,
-                    activeReferrals: 0,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // If referral code was provided, update referrer's data
-                if (formData.referralCode) {
-                    await processReferral(formData.referralCode, user.uid);
-                }
-                
-                // Create initial transaction record
-                await db.collection('transactions').add({
-                    userId: user.uid,
-                    type: 'signup_bonus',
-                    amount: 10,
-                    status: 'completed',
-                    description: 'Welcome bonus for new account',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showToast('success', 'Account Created', 'Welcome to INVITEGAIN! Redirecting to your profile...');
-                
-                // Wait a moment to show the success message, then redirect
-                setTimeout(() => {
-                    redirectToProfile();
-                }, 1500);
-                
-            } catch (error) {
-                console.error('Registration error:', error);
-                
-                let errorMessage = 'An error occurred during registration.';
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'This email is already registered.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address.';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Password is too weak. Please use a stronger password.';
-                        break;
-                    case 'auth/operation-not-allowed':
-                        errorMessage = 'Email/password accounts are not enabled.';
-                        break;
-                }
-                
-                showToast('error', 'Registration Failed', errorMessage);
-            } finally {
-                setLoading(registerBtn, false);
-            }
+   async function handleRegisterSubmit(event) {
+    event.preventDefault();
+    
+    if (!validateRegisterForm()) {
+        showToast('error', 'Validation Error', 'Please fix the errors in the form');
+        return;
+    }
+    
+    const formData = {
+        fullName: document.getElementById('fullName').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        password: document.getElementById('password').value.trim(),
+        referralCode: document.getElementById('referralCode').value.trim() || null
+    };
+    
+    setLoading(registerBtn, true);
+    
+    try {
+        // Create user in Firebase Auth
+        const userCredential = await auth.createUserWithEmailAndPassword(
+            formData.email, 
+            formData.password
+        );
+        
+        const user = userCredential.user;
+        
+        // Generate referral code for the user - FIXED LINE (removed comment)
+        const userReferralCode = await generateUniqueReferralCode(formData.username);
+
+        // Store additional user data in Firestore
+        await db.collection('users').doc(user.uid).set({
+            uid: user.uid,
+            fullName: formData.fullName,
+            username: formData.username,
+            email: formData.email,
+            phone: formData.phone,
+            referralCode: userReferralCode, // This should now be set
+            referredBy: formData.referralCode || null,
+            accountBalance: 0,
+            referralEarnings: 0,
+            totalReferrals: 0,
+            activeReferrals: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // If referral code was provided, update referrer's data
+        if (formData.referralCode) {
+            await processReferral(formData.referralCode, user.uid);
         }
+        
+        // Create initial transaction record
+        await db.collection('transactions').add({
+            userId: user.uid,
+            type: 'signup_bonus',
+            amount: 10,
+            status: 'completed',
+            description: 'Welcome bonus for new account',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        showToast('success', 'Account Created', 'Welcome to INVITEGAIN! Redirecting to your profile...');
+        
+        // Wait a moment to show the success message, then redirect
+        setTimeout(() => {
+            redirectToProfile();
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Registration error:', error);
+        
+        let errorMessage = 'An error occurred during registration.';
+        switch (error.code) {
+            case 'auth/email-already-in-use':
+                errorMessage = 'This email is already registered.';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = 'Invalid email address.';
+                break;
+            case 'auth/weak-password':
+                errorMessage = 'Password is too weak. Please use a stronger password.';
+                break;
+            case 'auth/operation-not-allowed':
+                errorMessage = 'Email/password accounts are not enabled.';
+                break;
+        }
+        
+        showToast('error', 'Registration Failed', errorMessage);
+    } finally {
+        setLoading(registerBtn, false);
+    }
+}
 
         async function handleForgotPassword() {
             const email = document.getElementById('loginEmail').value.trim() || 
@@ -1014,12 +1014,39 @@
                 showToast('error', 'Reset Failed', 'Failed to send reset email. Please try again.');
             }
         }
+async function generateUniqueReferralCode(username) {
+    let code;
+    let attempts = 0;
+    let isUnique = false;
 
-        // Utility functions
-        function generateReferralCode(username) {
-            const randomNum = Math.floor(1000 + Math.random() * 9000);
-            return `${username.toUpperCase().substring(0, 3)}${randomNum}`;
+    while (!isUnique && attempts < 10) {
+        attempts++;
+        
+        // Generate a code using first 3 letters of username + 4 random digits
+        const prefix = username.substring(0, 3).toUpperCase();
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        code = `${prefix}${randomNum}`;
+
+        // Check if code already exists
+        const snapshot = await db.collection('users')
+            .where('referralCode', '==', code)
+            .limit(1)
+            .get();
+
+        if (snapshot.empty) {
+            isUnique = true;
         }
+    }
+
+    // Fallback if all attempts fail
+    if (!isUnique) {
+        const randomNum = Math.floor(10000 + Math.random() * 90000);
+        code = `${username.substring(0, 3).toUpperCase()}${randomNum}`;
+    }
+
+    return code;
+}
+
 
         async function processReferral(referralCode, newUserId) {
             try {

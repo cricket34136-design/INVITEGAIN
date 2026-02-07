@@ -20,6 +20,39 @@
             --warning: #ffaa00;
         }
 
+        .loading-text {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loading-text::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .balance-updating {
+            animation: pulseBalance 2s infinite;
+        }
+
+        @keyframes pulseBalance {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -778,6 +811,14 @@
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
+
+        /* Disabled button text */
+        .btn-disabled-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+            text-align: center;
+        }
     </style>
     <!-- Chart.js for graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -904,7 +945,7 @@
             </div>
             
             <div class="insufficient-balance" id="insufficientBalance">
-                Insufficient balance! Please deposit funds first.
+                Insufficient balance! <a href="deposit.html" style="color: var(--primary); text-decoration: underline;">Go to Deposit</a>
             </div>
 
             <div class="form-group">
@@ -919,12 +960,13 @@
 
             <div class="form-group">
                 <label class="form-label">Investment Amount (PKR)</label>
-                <input type="number" id="modalAmount" class="form-input" placeholder="Enter amount" min="1000" max="200000" step="100">
-                <div id="amountError" style="color: var(--danger); font-size: 0.9rem; margin-top: 5px; display: none;">
-                    Amount must be between min and max of selected plan
-                </div>
+                <input type="text" id="modalAmount" class="form-input" readonly>
             </div>
 
+            <div class="summary-item">
+                <span>Daily Profit %</span>
+                <span id="summaryDailyPercent">0%</span>
+            </div>
             <div class="summary-item">
                 <span>Daily Profit</span>
                 <span id="summaryDaily">0 PKR</span>
@@ -1026,7 +1068,6 @@
         let selectedPlan = null;
         let chart = null;
         let currentTimeframe = '1H';
-        let realTimePrices = {};
         let priceUpdateInterval = null;
         let walletListener = null;
         let investmentsListener = null;
@@ -1042,25 +1083,70 @@
         const investModal = document.getElementById('investModal');
         const investmentCount = document.getElementById('investmentCount');
 
-        // Initialize App
+        // Asset Plans Configuration
+        const ASSET_PLANS = {
+            'BTC': [
+                { amount: 1500, dailyPercent: 30, name: 'BTC Plan 1' },
+                { amount: 2500, dailyPercent: 30, name: 'BTC Plan 2' },
+                { amount: 3500, dailyPercent: 30, name: 'BTC Plan 3' }
+            ],
+            'ETH': [
+                { amount: 1000, dailyPercent: 25, name: 'ETH Plan 1' },
+                { amount: 1500, dailyPercent: 25, name: 'ETH Plan 2' },
+                { amount: 2200, dailyPercent: 25, name: 'ETH Plan 3' }
+            ],
+            'GOLD': [
+                { amount: 800, dailyPercent: 20, name: 'GOLD Plan 1' },
+                { amount: 1200, dailyPercent: 20, name: 'GOLD Plan 2' },
+                { amount: 2000, dailyPercent: 20, name: 'GOLD Plan 3' }
+            ],
+            'SILVER': [
+                { amount: 500, dailyPercent: 15, name: 'SILVER Plan 1' },
+                { amount: 800, dailyPercent: 15, name: 'SILVER Plan 2' },
+                { amount: 1000, dailyPercent: 15, name: 'SILVER Plan 3' }
+            ]
+        };
+
+        // Initialize App with better error handling
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                console.log('Initializing app...');
+                
                 // Check authentication
                 await checkAuth();
+                console.log('Authentication successful');
                 
                 // Initialize components
-                await initAssets();
-                await initPlans();
+                initAssets();
+                console.log('Assets initialized');
+                
+                updatePlansForAsset();
+                console.log('Plans updated');
+                
                 initChart();
+                console.log('Chart initialized');
+                
+                // Set up real-time wallet listener FIRST
+                setupWalletListener();
+                console.log('Wallet listener setup');
+                
+                // Load investments
                 await loadInvestments();
+                console.log('Investments loaded');
                 
                 // Start real-time updates
                 startRealTimeUpdates();
-                
-                // Set up wallet listener
-                setupWalletListener();
+                console.log('Real-time updates started');
                 
                 showToast('Investment dashboard loaded!', 'success');
+                
+                // Add balance refresh on visibility change
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) {
+                        refreshWalletBalance();
+                    }
+                });
+                
             } catch (error) {
                 console.error('Initialization error:', error);
                 showToast('Failed to load dashboard. Please refresh.', 'error');
@@ -1068,7 +1154,6 @@
         });
 
         async function checkAuth() {
-            // Check if user is logged in
             return new Promise((resolve, reject) => {
                 auth.onAuthStateChanged(async (user) => {
                     if (user) {
@@ -1076,62 +1161,33 @@
                         console.log('User logged in:', user.email);
                         resolve(user);
                     } else {
-                        // For development without auth, use a dummy user
-                        console.log('No user logged in, using demo user');
-                        currentUser = {
-                            uid: 'demo-user-123',
-                            email: 'demo@invitegain.com'
-                        };
-                        resolve(currentUser);
+                        // Redirect to login if not authenticated
+                        console.log('No user, redirecting to login...');
+                        window.location.href = 'index.html';
+                        reject(new Error('User not authenticated'));
                     }
                 });
             });
         }
 
         // Asset Functions
-        async function initAssets() {
-            try {
-                // Try to load assets from Firestore first
-                const assetsSnapshot = await db.collection('assets').get();
-                
-                if (!assetsSnapshot.empty) {
-                    const assets = [];
-                    assetsSnapshot.forEach(doc => {
-                        assets.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    // Store assets and update UI
-                    window.assets = assets;
-                    selectedAsset = assets[0] || getDefaultAssets()[0];
-                } else {
-                    // Use default assets if Firestore is empty
-                    window.assets = getDefaultAssets();
-                    selectedAsset = window.assets[0];
-                }
-                
-                updateAssetUI();
-            } catch (error) {
-                console.error('Error loading assets:', error);
-                // Fallback to default assets
-                window.assets = getDefaultAssets();
-                selectedAsset = window.assets[0];
-                updateAssetUI();
-            }
-        }
-
-        function getDefaultAssets() {
-            return [
+        function initAssets() {
+            const assets = [
                 { id: 'btc', symbol: 'BTC', name: 'Bitcoin', price: 65000, change: 2.5 },
                 { id: 'eth', symbol: 'ETH', name: 'Ethereum', price: 3500, change: -1.2 },
-                { id: 'gold', symbol: 'XAU', name: 'Gold', price: 2100, change: 0.8 },
-                { id: 'silver', symbol: 'XAG', name: 'Silver', price: 24.5, change: 0.3 }
+                { id: 'gold', symbol: 'GOLD', name: 'Gold', price: 2100, change: 0.8 },
+                { id: 'silver', symbol: 'SILVER', name: 'Silver', price: 24.5, change: 0.3 }
             ];
+            
+            window.assets = assets;
+            selectedAsset = assets[0];
+            updateAssetUI();
         }
 
         function updateAssetUI() {
             assetSelector.innerHTML = '';
             window.assets.forEach(asset => {
-                const isSelected = asset.id === selectedAsset.id;
+                const isSelected = asset.symbol === selectedAsset.symbol;
                 const card = document.createElement('div');
                 card.className = `asset-card ${isSelected ? 'selected' : ''}`;
                 card.innerHTML = `
@@ -1152,87 +1208,24 @@
         function selectAsset(asset) {
             selectedAsset = asset;
             updateAssetUI();
+            updatePlansForAsset();
             updateChart();
             showToast(`${asset.name} selected`, 'success');
         }
 
-        // Plan Functions
-        async function initPlans() {
-            try {
-                // Load plans from Firestore
-                const plansSnapshot = await db.collection('investmentPlans').get();
-                
-                if (!plansSnapshot.empty) {
-                    const plans = [];
-                    plansSnapshot.forEach(doc => {
-                        plans.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    // Sort plans by min amount
-                    plans.sort((a, b) => a.min - b.min);
-                    window.plans = plans;
-                } else {
-                    // Use default plans if Firestore is empty
-                    window.plans = getDefaultPlans();
-                }
-                
-                updatePlansUI();
-            } catch (error) {
-                console.error('Error loading plans:', error);
-                window.plans = getDefaultPlans();
-                updatePlansUI();
-            }
-        }
-
-        function getDefaultPlans() {
-            return [
-                {
-                    id: 'starter',
-                    name: 'Starter Plan',
-                    min: 1000,
-                    max: 5000,
-                    dailyPercent: 1.2,
-                    duration: 15,
-                    refund: true,
-                    active: true
-                },
-                {
-                    id: 'silver',
-                    name: 'Silver Plan',
-                    min: 5000,
-                    max: 15000,
-                    dailyPercent: 1.6,
-                    duration: 25,
-                    refund: true,
-                    active: true
-                },
-                {
-                    id: 'gold',
-                    name: 'Gold Plan',
-                    min: 15000,
-                    max: 50000,
-                    dailyPercent: 2.0,
-                    duration: 30,
-                    refund: true,
-                    active: true
-                },
-                {
-                    id: 'vip',
-                    name: 'VIP Plan',
-                    min: 50000,
-                    max: 200000,
-                    dailyPercent: 2.5,
-                    duration: 40,
-                    refund: true,
-                    active: true
-                }
-            ];
-        }
-
-        function updatePlansUI() {
+        function updatePlansForAsset() {
+            if (!selectedAsset || !ASSET_PLANS[selectedAsset.symbol]) return;
+            
+            const plans = ASSET_PLANS[selectedAsset.symbol];
             plansGrid.innerHTML = '';
-            window.plans.forEach(plan => {
-                if (!plan.active) return;
+            
+            plans.forEach((plan, index) => {
+                const dailyProfit = (plan.amount * plan.dailyPercent / 100).toFixed(2);
+                const totalProfit = (dailyProfit * 30).toFixed(2);
+                const totalReturn = (parseFloat(totalProfit) + plan.amount).toFixed(2);
+                
+                // Use the REAL-TIME userWalletBalance
+                const isDisabled = userWalletBalance < plan.amount;
                 
                 const card = document.createElement('div');
                 card.className = 'plan-card';
@@ -1243,26 +1236,30 @@
                     </div>
                     <div class="plan-details">
                         <div class="detail-item">
-                            <span class="detail-label">Min Deposit</span>
-                            <span class="detail-value">${plan.min.toLocaleString()} PKR</span>
+                            <span class="detail-label">Investment</span>
+                            <span class="detail-value">${plan.amount.toLocaleString()} PKR</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Max Deposit</span>
-                            <span class="detail-value">${plan.max.toLocaleString()} PKR</span>
+                            <span class="detail-label">Daily Profit %</span>
+                            <span class="detail-value profit-value">${plan.dailyPercent}%</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Duration</span>
-                            <span class="detail-value">${plan.duration} Days</span>
+                            <span class="detail-label">Daily Profit</span>
+                            <span class="detail-value profit-value">${dailyProfit} PKR</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Refund</span>
-                            <span class="detail-value" style="color: var(--success);">${plan.refund ? 'Yes' : 'No'}</span>
+                            <span class="detail-label">Principal Refund</span>
+                            <span class="detail-value" style="color: var(--success);">Yes</span>
                         </div>
                     </div>
                     <div class="plan-actions">
-                        <button class="btn btn-secondary" onclick="openCalculator('${plan.id}')">Calculate</button>
-                        <button class="btn btn-primary" onclick="openInvestModal('${plan.id}')" ${userWalletBalance < plan.min ? 'disabled' : ''}>Invest Now</button>
+                        <button class="btn btn-secondary" onclick="openCalculator('${selectedAsset.symbol}', ${index})">Calculate</button>
+                        <button class="btn btn-primary" onclick="openInvestModal('${selectedAsset.symbol}', ${index})" 
+                                ${isDisabled ? 'disabled' : ''}>
+                            Invest Now
+                        </button>
                     </div>
+                    ${isDisabled ? `<div class="btn-disabled-text">Need ${(plan.amount - userWalletBalance).toLocaleString()} PKR more</div>` : ''}
                 `;
                 plansGrid.appendChild(card);
             });
@@ -1272,10 +1269,10 @@
         function initChart() {
             const ctx = document.getElementById('marketChart').getContext('2d');
             
-            // Generate initial data
-            const initialData = generateChartData(50, selectedAsset.price * 0.9, selectedAsset.price * 1.1);
+            // Generate smoother initial data
+            const initialData = generateSmoothChartData(50, selectedAsset.price);
             
-            // Create chart
+            // Create chart with improved styling
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1287,8 +1284,12 @@
                         backgroundColor: 'rgba(0, 255, 136, 0.1)',
                         borderWidth: 3,
                         fill: true,
-                        tension: 0.4,
-                        pointRadius: 0
+                        tension: 0.5,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#00ff88',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
                     }]
                 },
                 options: {
@@ -1299,9 +1300,16 @@
                         tooltip: {
                             mode: 'index',
                             intersect: false,
+                            backgroundColor: 'rgba(10, 10, 15, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#b0b0c0',
+                            borderColor: 'rgba(108, 99, 255, 0.3)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            padding: 12,
                             callbacks: {
                                 label: function(context) {
-                                    return `Price: $${context.parsed.y.toFixed(2)}`;
+                                    return `Price: $${context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                                 }
                             }
                         }
@@ -1315,7 +1323,8 @@
                             display: false,
                             grid: { 
                                 display: true,
-                                color: 'rgba(255, 255, 255, 0.1)'
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
                             },
                             ticks: { display: false }
                         }
@@ -1325,7 +1334,7 @@
                         mode: 'nearest'
                     },
                     animation: {
-                        duration: 1000,
+                        duration: 1500,
                         easing: 'easeOutQuart'
                     }
                 }
@@ -1334,11 +1343,26 @@
             updateChartStats(initialData);
         }
 
+        function generateSmoothChartData(count, basePrice) {
+            const data = [];
+            let current = basePrice;
+            
+            for (let i = 0; i < count; i++) {
+                const momentum = i > 0 ? (current - data[i-1]) / data[i-1] : 0;
+                const random = (Math.random() - 0.5) * 0.02;
+                const change = current * (momentum * 0.3 + random);
+                current += change;
+                
+                current = Math.max(basePrice * 0.8, Math.min(basePrice * 1.2, current));
+                data.push(current);
+            }
+            return data;
+        }
+
         function updateChart() {
             if (!chart || !selectedAsset) return;
             
-            // Update chart data based on selected asset
-            const newData = generateChartData(50, selectedAsset.price * 0.9, selectedAsset.price * 1.1);
+            const newData = generateSmoothChartData(50, selectedAsset.price);
             
             chart.data.datasets[0].data = newData;
             chart.data.datasets[0].label = selectedAsset.symbol;
@@ -1347,32 +1371,22 @@
             updateChartStats(newData);
         }
 
-        function generateChartData(count, min, max) {
-            const data = [];
-            let current = (min + max) / 2;
-            for (let i = 0; i < count; i++) {
-                const change = (Math.random() - 0.5) * (max - min) * 0.05;
-                current += change;
-                current = Math.max(min, Math.min(max, current));
-                data.push(current);
-            }
-            return data;
-        }
-
         function updateChartStats(data) {
             if (!data.length || !selectedAsset) return;
             
             const min = Math.min(...data);
             const max = Math.max(...data);
             
-            currentPrice.textContent = `$${selectedAsset.price.toLocaleString()}`;
-            document.getElementById('highPrice').textContent = max.toFixed(2);
-            document.getElementById('lowPrice').textContent = min.toFixed(2);
-            document.getElementById('dailyChange').textContent = 
+            currentPrice.textContent = `$${selectedAsset.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('highPrice').textContent = max.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('lowPrice').textContent = min.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            const dailyChangeElement = document.getElementById('dailyChange');
+            dailyChangeElement.textContent = 
                 selectedAsset.change >= 0 ? 
                 `+${selectedAsset.change.toFixed(2)}%` : 
                 `${selectedAsset.change.toFixed(2)}%`;
-            document.getElementById('dailyChange').style.color = 
+            dailyChangeElement.style.color = 
                 selectedAsset.change >= 0 ? 'var(--success)' : 'var(--danger)';
         }
 
@@ -1385,31 +1399,37 @@
                 }
             });
             
-            // Update chart data based on timeframe
             const basePrice = selectedAsset.price;
-            let volatility = 0.05;
+            let volatility = 0.02;
             let dataPoints = 50;
             
             switch(timeframe) {
                 case '1H':
-                    volatility = 0.02;
+                    volatility = 0.01;
                     dataPoints = 30;
                     break;
                 case '24H':
-                    volatility = 0.05;
+                    volatility = 0.03;
                     dataPoints = 50;
                     break;
                 case '7D':
-                    volatility = 0.1;
+                    volatility = 0.06;
                     dataPoints = 70;
                     break;
                 case '30D':
-                    volatility = 0.15;
+                    volatility = 0.12;
                     dataPoints = 100;
                     break;
             }
             
-            const newData = generateChartData(dataPoints, basePrice * (1 - volatility), basePrice * (1 + volatility));
+            const newData = [];
+            let current = basePrice;
+            for (let i = 0; i < dataPoints; i++) {
+                const change = current * ((Math.random() - 0.5) * volatility);
+                current += change;
+                newData.push(current);
+            }
+            
             chart.data.datasets[0].data = newData;
             chart.update('active');
             
@@ -1417,33 +1437,37 @@
         }
 
         // Wallet Functions
-        async function setupWalletListener() {
+        function setupWalletListener() {
             if (!currentUser) return;
             
             try {
+                if (walletListener) walletListener();
+                
                 walletListener = db.collection('users').doc(currentUser.uid)
-                    .onSnapshot(async (doc) => {
+                    .onSnapshot((doc) => {
                         if (doc.exists) {
                             const userData = doc.data();
-                            userWalletBalance = userData.balance || 0;
-                            updateWalletUI();
+                            userWalletBalance = userData.balance || userData.accountBalance || 0;
                             
-                            // Update plan buttons based on balance
-                            updatePlanButtons();
+                            console.log('Real-time wallet update:', userWalletBalance);
+                            
+                            updateWalletUI();
+                            updatePlansForAsset();
+                            
                         } else {
-                            // Create user document if it doesn't exist
-                            try {
-                                await db.collection('users').doc(currentUser.uid).set({
-                                    balance: 0,
-                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    email: currentUser.email,
-                                    totalInvested: 0,
-                                    totalProfit: 0,
-                                    activeInvestments: 0
-                                });
-                            } catch (error) {
-                                console.error('Error creating user document:', error);
-                            }
+                            db.collection('users').doc(currentUser.uid).set({
+                                balance: 0,
+                                accountBalance: 0,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                email: currentUser.email,
+                                totalInvested: 0,
+                                totalProfit: 0,
+                                activeInvestments: 0
+                            }, { merge: true }).then(() => {
+                                userWalletBalance = 0;
+                                updateWalletUI();
+                                updatePlansForAsset();
+                            });
                         }
                     }, (error) => {
                         console.error('Wallet listener error:', error);
@@ -1458,33 +1482,23 @@
             walletAmount.textContent = `${userWalletBalance.toLocaleString()} PKR`;
         }
 
-        function updatePlanButtons() {
-            if (!window.plans) return;
-            
-            document.querySelectorAll('.plan-actions .btn-primary').forEach((btn, index) => {
-                const plan = window.plans[index];
-                if (plan && userWalletBalance < plan.min) {
-                    btn.disabled = true;
-                    btn.title = `Minimum ${plan.min} PKR required`;
-                } else if (plan) {
-                    btn.disabled = false;
-                    btn.title = '';
-                }
-            });
-        }
-
         async function refreshWalletBalance() {
             try {
+                walletAmount.classList.add('balance-updating');
                 const userDoc = await db.collection('users').doc(currentUser.uid).get();
                 if (userDoc.exists) {
                     userWalletBalance = userDoc.data().balance || 0;
                     updateWalletUI();
-                    updatePlanButtons();
+                    updatePlansForAsset();
                     showToast('Balance refreshed!', 'success');
                 }
             } catch (error) {
                 console.error('Error refreshing balance:', error);
                 showToast('Failed to refresh balance', 'error');
+            } finally {
+                setTimeout(() => {
+                    walletAmount.classList.remove('balance-updating');
+                }, 1000);
             }
         }
 
@@ -1493,17 +1507,17 @@
             if (!currentUser) return;
             
             try {
-                // Fix for the index error - Use simpler query without orderBy
+                if (investmentsListener) investmentsListener();
+                
                 investmentsListener = db.collection('investments')
                     .where('userId', '==', currentUser.uid)
-                    .where('status', '==', 'active')
+                    .where('status', '==', 'running')
                     .onSnapshot((snapshot) => {
                         const investments = [];
                         snapshot.forEach(doc => {
                             investments.push({ id: doc.id, ...doc.data() });
                         });
                         
-                        // Sort manually by createdAt in memory
                         investments.sort((a, b) => {
                             const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
                             const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
@@ -1514,11 +1528,7 @@
                         updateInvestmentCount(investments.length);
                     }, (error) => {
                         console.error('Investments listener error:', error);
-                        
-                        // If index error, show instructions to create index
-                        if (error.code === 'failed-precondition') {
-                            showToast('Please create the required index in Firebase Console', 'warning');
-                        }
+                        showToast('Failed to load investments', 'error');
                     });
             } catch (error) {
                 console.error('Error loading investments:', error);
@@ -1543,22 +1553,19 @@
             investmentsGrid.innerHTML = '';
             investments.forEach(investment => {
                 const now = new Date();
-                const startDate = investment.startDate?.toDate ? investment.startDate.toDate() : new Date(investment.startDate);
-                const endDate = investment.endDate?.toDate ? investment.endDate.toDate() : new Date(investment.endDate);
-                
+                const startDate = investment.createdAt?.toDate ? investment.createdAt.toDate() : new Date(investment.createdAt);
                 const daysPassed = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
-                const daysLeft = Math.max(0, investment.duration - daysPassed);
-                const progress = Math.min(100, (daysPassed / investment.duration) * 100);
+                const daysLeft = Math.max(0, 30 - daysPassed);
+                const progress = Math.min(100, (daysPassed / 30) * 100);
                 
-                const dailyProfit = investment.amount * investment.dailyPercent / 100;
-                const totalProfit = dailyProfit * investment.duration;
-                const earnedProfit = dailyProfit * daysPassed;
+                const dailyProfit = investment.dailyProfit || (investment.planAmount * investment.dailyPercent / 100);
+                const earnedProfit = (investment.earnedProfit || 0) + (dailyProfit * daysPassed);
+                const totalReturn = investment.totalReturn || (earnedProfit + investment.planAmount);
                 
-                // Calculate next payout time
                 const nextPayout = new Date(startDate);
                 nextPayout.setDate(nextPayout.getDate() + daysPassed + 1);
                 const timeToNextPayout = nextPayout - now;
-                const hoursToPayout = Math.floor(timeToNextPayout / (1000 * 60 * 60));
+                const hoursToPayout = Math.max(0, Math.floor(timeToNextPayout / (1000 * 60 * 60)));
                 
                 const card = document.createElement('div');
                 card.className = 'investment-card';
@@ -1569,14 +1576,14 @@
                                 <circle cx="12" cy="12" r="10"/>
                                 <path d="M12 6v6l4 2"/>
                             </svg>
-                            <span>${investment.asset} - ${investment.planName}</span>
+                            <span>${investment.assetSymbol} - ${investment.planName}</span>
                         </div>
                         <div class="status-badge status-running">Running</div>
                     </div>
                     <div class="investment-details">
                         <div class="detail-item">
                             <span class="detail-label">Invested</span>
-                            <span class="detail-value">${investment.amount.toLocaleString()} PKR</span>
+                            <span class="detail-value">${investment.planAmount.toLocaleString()} PKR</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Daily Profit</span>
@@ -1596,7 +1603,7 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Total Return</span>
-                            <span class="detail-value profit-value">${totalProfit.toFixed(2)} PKR</span>
+                            <span class="detail-value profit-value">${totalReturn.toFixed(2)} PKR</span>
                         </div>
                     </div>
                     <div class="progress-container">
@@ -1604,7 +1611,7 @@
                             <div class="progress-fill" style="width: ${progress}%"></div>
                         </div>
                         <div class="progress-text">
-                            <span>Day ${daysPassed} of ${investment.duration} (${daysLeft} left)</span>
+                            <span>Day ${daysPassed} of 30 (${daysLeft} left)</span>
                             <span>${progress.toFixed(1)}%</span>
                         </div>
                     </div>
@@ -1632,25 +1639,66 @@
         }
 
         async function withdrawProfit(investmentId) {
-            // Implementation for profit withdrawal
-            showToast('Profit withdrawal feature coming soon!', 'warning');
+            try {
+                showToast('Processing profit withdrawal...', 'info');
+                
+                // Get investment
+                const investmentRef = db.collection('investments').doc(investmentId);
+                const investmentDoc = await investmentRef.get();
+                
+                if (!investmentDoc.exists) {
+                    showToast('Investment not found', 'error');
+                    return;
+                }
+                
+                const investment = investmentDoc.data();
+                
+                // Update user balance
+                await db.collection('users').doc(currentUser.uid).update({
+                    balance: firebase.firestore.FieldValue.increment(investment.earnedProfit || 0),
+                    totalProfit: firebase.firestore.FieldValue.increment(investment.earnedProfit || 0),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Mark profit as withdrawn
+                await investmentRef.update({
+                    earnedProfit: 0,
+                    lastWithdrawal: new Date().toISOString()
+                });
+                
+                showToast(`Profit of ${(investment.earnedProfit || 0).toFixed(2)} PKR withdrawn successfully!`, 'success');
+                refreshWalletBalance();
+                
+            } catch (error) {
+                console.error('Withdrawal error:', error);
+                showToast('Failed to withdraw profit', 'error');
+            }
         }
 
-        // Modal Functions
-        function openInvestModal(planId) {
-            selectedPlan = window.plans.find(p => p.id === planId);
-            if (!selectedPlan || !selectedAsset) return;
+        function openInvestModal(assetSymbol, planIndex) {
+            const plans = ASSET_PLANS[assetSymbol];
+            if (!plans || !plans[planIndex] || !selectedAsset) {
+                showToast('Invalid plan selection', 'error');
+                return;
+            }
+            
+            selectedPlan = plans[planIndex];
+            
+            const dailyProfit = (selectedPlan.amount * selectedPlan.dailyPercent / 100).toFixed(2);
+            const totalProfit = (dailyProfit * 30).toFixed(2);
+            const totalReturn = (parseFloat(totalProfit) + selectedPlan.amount).toFixed(2);
             
             document.getElementById('modalAsset').value = selectedAsset.name;
             document.getElementById('modalPlan').value = selectedPlan.name;
-            document.getElementById('modalAmount').value = selectedPlan.min;
+            document.getElementById('modalAmount').value = selectedPlan.amount.toLocaleString() + ' PKR';
+            
             document.getElementById('modalWalletBalance').textContent = `${userWalletBalance.toLocaleString()} PKR`;
+            document.getElementById('summaryDailyPercent').textContent = `${selectedPlan.dailyPercent}%`;
+            document.getElementById('summaryDaily').textContent = `${dailyProfit} PKR`;
+            document.getElementById('summaryTotal').textContent = `${totalProfit} PKR`;
+            document.getElementById('summaryReturn').textContent = `${totalReturn} PKR`;
             
-            // Check balance
-            checkBalanceForInvestment(selectedPlan.min);
-            
-            // Update summary
-            updateInvestmentSummary(selectedPlan.min);
+            checkBalanceForInvestment(selectedPlan.amount);
             
             investModal.style.display = 'flex';
         }
@@ -1665,6 +1713,7 @@
                 afterBalance.textContent = `${userWalletBalance.toLocaleString()} PKR`;
                 afterBalance.style.color = 'var(--danger)';
                 confirmBtn.disabled = true;
+                confirmBtn.innerHTML = 'Insufficient Balance';
                 return false;
             } else {
                 insufficientBalance.style.display = 'none';
@@ -1672,6 +1721,7 @@
                 afterBalance.textContent = `${newBalance.toLocaleString()} PKR`;
                 afterBalance.style.color = 'var(--success)';
                 confirmBtn.disabled = false;
+                confirmBtn.innerHTML = 'Confirm Investment';
                 return true;
             }
         }
@@ -1682,117 +1732,124 @@
         }
 
         async function confirmInvestment() {
-            const amountInput = document.getElementById('modalAmount');
-            const amount = parseFloat(amountInput.value);
-            
-            if (!selectedPlan || !amount || !currentUser) {
-                showToast('Please enter a valid amount', 'error');
+            if (!selectedPlan || !selectedAsset || !currentUser) {
+                showToast('Invalid investment data', 'error');
                 return;
             }
             
-            if (amount < selectedPlan.min || amount > selectedPlan.max) {
-                document.getElementById('amountError').style.display = 'block';
-                return;
-            }
-            
-            // Check balance again
-            if (userWalletBalance < amount) {
+            if (userWalletBalance < selectedPlan.amount) {
+                showToast('Insufficient balance! Please refresh.', 'error');
                 document.getElementById('insufficientBalance').style.display = 'block';
-                showToast('Insufficient balance!', 'error');
                 return;
             }
             
-            document.getElementById('amountError').style.display = 'none';
-            
-            // Show loading
             const confirmBtn = document.getElementById('confirmBtn');
-            const originalText = confirmBtn.textContent;
+            const originalText = confirmBtn.innerHTML;
             confirmBtn.classList.add('loading');
             confirmBtn.disabled = true;
-            confirmBtn.textContent = 'Processing...';
+            confirmBtn.innerHTML = '<span class="loading-text">Processing...</span>';
             
             try {
-                // Create investment record
+                const dailyProfit = selectedPlan.amount * selectedPlan.dailyPercent / 100;
+                const totalProfit = dailyProfit * 30;
+                const totalReturn = totalProfit + selectedPlan.amount;
+                
                 const investmentData = {
                     userId: currentUser.uid,
-                    planId: selectedPlan.id,
+                    userEmail: currentUser.email,
+                    assetId: selectedAsset.id,
+                    assetSymbol: selectedAsset.symbol,
                     planName: selectedPlan.name,
-                    asset: selectedAsset.symbol,
-                    assetName: selectedAsset.name,
-                    amount: amount,
+                    planAmount: selectedPlan.amount,
                     dailyPercent: selectedPlan.dailyPercent,
-                    duration: selectedPlan.duration,
-                    totalProfit: amount * selectedPlan.dailyPercent * selectedPlan.duration / 100,
-                    startDate: firebase.firestore.FieldValue.serverTimestamp(),
-                    endDate: new Date(Date.now() + selectedPlan.duration * 24 * 60 * 60 * 1000),
-                    status: 'active',
-                    refundPrincipal: selectedPlan.refund,
+                    dailyProfit: dailyProfit,
+                    totalProfit: totalProfit,
+                    totalReturn: totalReturn,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    currentProfit: 0,
-                    lastPayout: null
+                    status: "running",
+                    durationDays: 30,
+                    principalRefund: true,
+                    lastProfitDate: null,
+                    earnedProfit: 0,
+                    remainingDays: 30,
+                    isActive: true,
+                    startDate: new Date().toISOString()
                 };
                 
-                // Use batch write for atomic operations
-                const batch = db.batch();
-                
-                // Create investment document
-                const investmentRef = db.collection('investments').doc();
-                batch.set(investmentRef, investmentData);
-                
-                // Update user balance
-                const userRef = db.collection('users').doc(currentUser.uid);
-                const userDoc = await userRef.get();
-                const currentBalance = userDoc.exists ? (userDoc.data().balance || 0) : 0;
-                
-                batch.update(userRef, {
-                    balance: currentBalance - amount,
-                    totalInvested: firebase.firestore.FieldValue.increment(amount),
-                    activeInvestments: firebase.firestore.FieldValue.increment(1),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                await db.runTransaction(async (transaction) => {
+                    const userRef = db.collection('users').doc(currentUser.uid);
+                    const userDoc = await transaction.get(userRef);
+                    
+                    if (!userDoc.exists) {
+                        throw new Error("User document not found");
+                    }
+                    
+                    const currentBalance = userDoc.data().balance || 0;
+                    
+                    if (currentBalance < selectedPlan.amount) {
+                        throw new Error("Insufficient balance");
+                    }
+                    
+                    const newBalance = currentBalance - selectedPlan.amount;
+                    
+                    const investmentRef = db.collection('investments').doc();
+                    transaction.set(investmentRef, investmentData);
+                    
+                    const userInvestmentRef = db.collection('users').doc(currentUser.uid)
+                        .collection('investments').doc(investmentRef.id);
+                    transaction.set(userInvestmentRef, investmentData);
+                    
+                    transaction.update(userRef, {
+                        balance: newBalance,
+                        totalInvested: firebase.firestore.FieldValue.increment(selectedPlan.amount),
+                        activeInvestments: firebase.firestore.FieldValue.increment(1),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastInvestment: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    userWalletBalance = newBalance;
+                    
+                    return {
+                        investmentId: investmentRef.id,
+                        newBalance: newBalance
+                    };
                 });
                 
-                // Create transaction record
-                const transactionRef = db.collection('transactions').doc();
-                batch.set(transactionRef, {
-                    userId: currentUser.uid,
-                    type: 'investment',
-                    amount: amount,
-                    status: 'completed',
-                    description: `Investment in ${selectedAsset.symbol} - ${selectedPlan.name}`,
-                    investmentId: investmentRef.id,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    newBalance: currentBalance - amount
-                });
-                
-                // Commit batch
-                await batch.commit();
-                
-                // Success
                 closeModal();
-                showToast(`Investment of ${amount} PKR successful!`, 'success');
+                showToast(`Investment of ${selectedPlan.amount.toLocaleString()} PKR successful!`, 'success');
+                
+                updateWalletUI();
+                updatePlansForAsset();
                 
             } catch (error) {
                 console.error('Investment error:', error);
-                showToast(error.message || 'Investment failed. Please try again.', 'error');
+                
+                await refreshWalletBalance();
+                
+                if (error.message === "Insufficient balance") {
+                    showToast('Insufficient balance. Please refresh and try again.', 'error');
+                } else {
+                    showToast('Investment failed. Please try again.', 'error');
+                }
             } finally {
                 confirmBtn.classList.remove('loading');
                 confirmBtn.disabled = false;
-                confirmBtn.textContent = originalText;
+                confirmBtn.innerHTML = originalText;
             }
         }
 
-        function openCalculator(planId) {
-            const plan = window.plans.find(p => p.id === planId);
-            if (!plan) return;
+        function openCalculator(assetSymbol, planIndex) {
+            const plans = ASSET_PLANS[assetSymbol];
+            if (!plans || !plans[planIndex]) return;
+            
+            const plan = plans[planIndex];
             
             document.getElementById('calcPlanName').value = plan.name;
             document.getElementById('calcDailyPercent').value = `${plan.dailyPercent}%`;
-            document.getElementById('calcDuration').value = `${plan.duration} days`;
-            document.getElementById('calcAmount').value = plan.min;
+            document.getElementById('calcDuration').value = `30 days`;
+            document.getElementById('calcAmount').value = plan.amount;
             
-            // Calculate initial values
-            calculateProfitForModal(plan, plan.min);
+            calculateProfitForModal(plan, plan.amount);
             
             document.getElementById('calculateModal').style.display = 'flex';
         }
@@ -1802,13 +1859,21 @@
         }
 
         function calculateProfit() {
-            const plan = window.plans.find(p => p.name === document.getElementById('calcPlanName').value);
+            const planName = document.getElementById('calcPlanName').value;
             const amount = parseFloat(document.getElementById('calcAmount').value);
             
-            if (!plan || !amount || amount < plan.min || amount > plan.max) {
+            let plan = null;
+            for (const asset in ASSET_PLANS) {
+                const found = ASSET_PLANS[asset].find(p => p.name === planName);
+                if (found) {
+                    plan = found;
+                    break;
+                }
+            }
+            
+            if (!plan || !amount || amount <= 0) {
                 document.getElementById('calcAmountError').style.display = 'block';
-                document.getElementById('calcAmountError').textContent = 
-                    `Amount must be between ${plan.min.toLocaleString()} and ${plan.max.toLocaleString()} PKR`;
+                document.getElementById('calcAmountError').textContent = 'Please enter a valid amount';
                 return;
             }
             
@@ -1818,86 +1883,54 @@
 
         function calculateProfitForModal(plan, amount) {
             const dailyProfit = amount * plan.dailyPercent / 100;
-            const totalProfit = dailyProfit * plan.duration;
-            const totalReturn = totalProfit + (plan.refund ? amount : 0);
+            const totalProfit = dailyProfit * 30;
+            const totalReturn = totalProfit + amount;
             
             document.getElementById('calcDailyProfit').textContent = `${dailyProfit.toFixed(2)} PKR`;
             document.getElementById('calcTotalProfit').textContent = `${totalProfit.toFixed(2)} PKR`;
             document.getElementById('calcTotalReturn').textContent = `${totalReturn.toFixed(2)} PKR`;
         }
 
-        function updateInvestmentSummary(amount) {
-            if (!selectedPlan) return;
-            
-            const dailyProfit = amount * selectedPlan.dailyPercent / 100;
-            const totalProfit = dailyProfit * selectedPlan.duration;
-            const totalReturn = totalProfit + (selectedPlan.refund ? amount : 0);
-            
-            document.getElementById('summaryDaily').textContent = `${dailyProfit.toFixed(2)} PKR`;
-            document.getElementById('summaryTotal').textContent = `${totalProfit.toFixed(2)} PKR`;
-            document.getElementById('summaryReturn').textContent = `${totalReturn.toFixed(2)} PKR`;
-            
-            // Update balance check
-            checkBalanceForInvestment(amount);
-        }
-
         // Real-time Updates
         function startRealTimeUpdates() {
-            // Simulate real-time price updates
             priceUpdateInterval = setInterval(() => {
                 updateAssetPrices();
-            }, 3000); // Update every 3 seconds
-            
-            // Update investment progress every minute
-            setInterval(() => {
-                updateInvestmentProgress();
-            }, 60000);
+            }, 3000);
         }
 
         function updateAssetPrices() {
             if (!window.assets) return;
             
             window.assets.forEach(asset => {
-                // Simulate realistic price movements
-                const volatility = 0.02; // 2% volatility
+                const volatility = asset.symbol === 'BTC' || asset.symbol === 'ETH' ? 0.015 : 0.008;
                 const changePercent = (Math.random() - 0.5) * volatility * 100;
                 const change = asset.price * (changePercent / 100);
                 asset.price += change;
                 asset.change = changePercent;
                 
-                // Keep prices within realistic ranges
-                switch(asset.id) {
-                    case 'btc':
+                switch(asset.symbol) {
+                    case 'BTC':
                         asset.price = Math.max(45000, Math.min(85000, asset.price));
                         break;
-                    case 'eth':
+                    case 'ETH':
                         asset.price = Math.max(2500, Math.min(4500, asset.price));
                         break;
-                    case 'gold':
+                    case 'GOLD':
                         asset.price = Math.max(1900, Math.min(2300, asset.price));
                         break;
-                    case 'silver':
+                    case 'SILVER':
                         asset.price = Math.max(22, Math.min(28, asset.price));
                         break;
                 }
             });
             
-            // Update UI if this asset is selected
             if (selectedAsset) {
-                const assetIndex = window.assets.findIndex(a => a.id === selectedAsset.id);
+                const assetIndex = window.assets.findIndex(a => a.symbol === selectedAsset.symbol);
                 if (assetIndex !== -1) {
                     selectedAsset = window.assets[assetIndex];
                     updateAssetUI();
                     
-                    // Update chart with new price data
-                    const newData = generateChartData(
-                        50, 
-                        selectedAsset.price * 0.95, 
-                        selectedAsset.price * 1.05
-                    );
-                    
                     if (chart) {
-                        // Add new data point and remove oldest
                         chart.data.datasets[0].data.push(selectedAsset.price);
                         if (chart.data.datasets[0].data.length > 50) {
                             chart.data.datasets[0].data.shift();
@@ -1905,16 +1938,8 @@
                         chart.update('active');
                     }
                     
-                    updateChartStats(newData);
+                    updateChartStats(chart.data.datasets[0].data);
                 }
-            }
-        }
-
-        function updateInvestmentProgress() {
-            // This function would update investment progress in real-time
-            // For now, just trigger a refresh of investments
-            if (investmentsListener) {
-                // The listener will automatically update
             }
         }
 
@@ -1926,10 +1951,8 @@
             
             toastContainer.appendChild(toast);
             
-            // Trigger animation
             setTimeout(() => toast.classList.add('show'), 10);
             
-            // Remove after delay
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => {
@@ -1941,34 +1964,46 @@
         }
 
         // Event Listeners
-        document.getElementById('modalAmount').addEventListener('input', (e) => {
-            const amount = parseFloat(e.target.value);
-            if (selectedPlan && amount) {
-                updateInvestmentSummary(amount);
-                document.getElementById('amountError').style.display = 
-                    (amount < selectedPlan.min || amount > selectedPlan.max) ? 'block' : 'none';
-            }
-        });
-
         document.getElementById('calcAmount').addEventListener('input', (e) => {
             document.getElementById('calcAmountError').style.display = 'none';
         });
 
-        // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
-            if (walletListener) walletListener();
-            if (investmentsListener) investmentsListener();
-            if (priceUpdateInterval) clearInterval(priceUpdateInterval);
+            if (walletListener) {
+                walletListener();
+                walletListener = null;
+            }
+            if (investmentsListener) {
+                investmentsListener();
+                investmentsListener = null;
+            }
+            if (priceUpdateInterval) {
+                clearInterval(priceUpdateInterval);
+                priceUpdateInterval = null;
+            }
         });
 
-        // Resize handler for chart
+        function cleanupListeners() {
+            if (walletListener) {
+                walletListener();
+                walletListener = null;
+            }
+            if (investmentsListener) {
+                investmentsListener();
+                investmentsListener = null;
+            }
+            if (priceUpdateInterval) {
+                clearInterval(priceUpdateInterval);
+                priceUpdateInterval = null;
+            }
+        }
+
         window.addEventListener('resize', () => {
             if (chart) {
                 chart.resize();
             }
         });
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (investModal.style.display === 'flex') {
