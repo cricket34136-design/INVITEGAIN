@@ -1454,21 +1454,44 @@
                             updateWalletUI();
                             updatePlansForAsset();
                             
-                        } else {
-                            db.collection('users').doc(currentUser.uid).set({
-                                balance: 0,
-                                accountBalance: 0,
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                email: currentUser.email,
-                                totalInvested: 0,
-                                totalProfit: 0,
-                                activeInvestments: 0
-                            }, { merge: true }).then(() => {
-                                userWalletBalance = 0;
-                                updateWalletUI();
-                                updatePlansForAsset();
-                            });
-                        }
+                    } else {
+  const generatedCode = "UMA" + Math.floor(1000 + Math.random() * 9000);
+
+  db.collection("users").doc(currentUser.uid).set({
+    uid: currentUser.uid,
+    email: currentUser.email,
+
+    // profile fields (empty but exist)
+    fullName: "",
+    username: "",
+    phone: "",
+
+    // referral system
+    referralCode: generatedCode,
+    referredBy: null,
+    referralEarnings: 0,
+    totalReferrals: 0,
+    activeReferrals: 0,
+
+    // wallet fields
+    balance: 0,
+    accountBalance: 0,
+    pendingWithdraw: 0,
+
+    // investment fields
+    totalInvested: 0,
+    totalProfit: 0,
+    activeInvestments: 0,
+
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, { merge: true }).then(() => {
+    userWalletBalance = 0;
+    updateWalletUI();
+    updatePlansForAsset();
+  });
+}
+
                     }, (error) => {
                         console.error('Wallet listener error:', error);
                         showToast('Failed to load wallet balance', 'error');
@@ -1487,7 +1510,9 @@
                 walletAmount.classList.add('balance-updating');
                 const userDoc = await db.collection('users').doc(currentUser.uid).get();
                 if (userDoc.exists) {
-                    userWalletBalance = userDoc.data().balance || 0;
+                 const data = userDoc.data();
+userWalletBalance = data.balance || data.accountBalance || 0;
+
                     updateWalletUI();
                     updatePlansForAsset();
                     showToast('Balance refreshed!', 'success');
@@ -1784,11 +1809,21 @@
                         throw new Error("User document not found");
                     }
                     
-                    const currentBalance = userDoc.data().balance || 0;
-                    
-                    if (currentBalance < selectedPlan.amount) {
-                        throw new Error("Insufficient balance");
-                    }
+                let currentBalance = (userDoc.data().balance || 0) + (userDoc.data().accountBalance || 0);
+
+if (currentBalance < selectedPlan.amount) {
+    throw new Error("Insufficient balance");
+}
+
+// Deduct from balance first, then accountBalance
+let deductFromBalance = Math.min(userDoc.data().balance || 0, selectedPlan.amount);
+let deductFromAccount = selectedPlan.amount - deductFromBalance;
+
+transaction.update(userRef, {
+    balance: (userDoc.data().balance || 0) - deductFromBalance,
+    accountBalance: (userDoc.data().accountBalance || 0) - deductFromAccount
+});
+
                     
                     const newBalance = currentBalance - selectedPlan.amount;
                     
