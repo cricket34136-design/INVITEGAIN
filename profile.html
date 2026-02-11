@@ -64,6 +64,9 @@
             transform: translateX(120%);
             transition: transform 0.3s ease;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
         }
 
         .toast.show {
@@ -80,6 +83,13 @@
 
         .toast.info {
             border-left: 4px solid var(--warning);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+            border-top: 2px solid rgba(255, 170, 0, 0.3);
+            border-right: 2px solid rgba(255, 170, 0, 0.3);
+            border-bottom: 2px solid rgba(255, 170, 0, 0.3);
         }
 
         /* Navigation - Match Investment Page */
@@ -250,7 +260,7 @@
             border-color: rgba(255, 71, 87, 0.3);
         }
 
-        /* Wallet Stats - Match Investment Page Grid */
+        /* Wallet Stats - RESPONSIVE GRID */
         .wallet-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -285,7 +295,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Wallet Grid */
+        /* Wallet Grid - RESPONSIVE GRID */
         .wallet-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -942,6 +952,36 @@
             }
         }
 
+        @media (min-width: 641px) and (max-width: 1024px) {
+            /* Tablet: 3 cards per row */
+            .wallet-stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .wallet-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .container {
+                max-width: 800px;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            /* Desktop: 4 cards per row */
+            .wallet-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .wallet-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .container {
+                max-width: 1200px;
+            }
+        }
+
         @media (max-width: 480px) {
             .transaction-filters {
                 flex-wrap: wrap;
@@ -1153,24 +1193,33 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
+      <!-- Bottom Navigation -->
     <nav class="bottom-nav">
         <button class="nav-item" id="dashboardBtn">
-            <i class="fas fa-chart-line nav-icon"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
             <span class="nav-label">Dashboard</span>
         </button>
         <button class="nav-item" id="investmentBtn">
-            <i class="fas fa-coins nav-icon"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M16.2 7.8l-2.6 2.6c-.3.3-.7.3-1 0L10 8.6c-.3-.3-.8-.1-.8.3v4.3c0 .4.3.8.8.8h4.3c.4 0 .6-.5.3-.8l-1.8-1.8 2.6-2.6c.3-.3.3-.7 0-1z"/>
+            </svg>
             <span class="nav-label">Investment</span>
         </button>
-        <button class="nav-item" id="referralBtn">
-            <i class="fas fa-gift nav-icon"></i>
+        <a href="referral.html" class="nav-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
             <span class="nav-label">Referral</span>
-        </button>
-        <button class="nav-item active" id="profileBtn">
-            <i class="fas fa-user nav-icon"></i>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 3a4 4 0 100 8 4 4 0 000-8z"/>
+            </svg>
             <span class="nav-label">Profile</span>
-        </button>
+        </a>
     </nav>
 
     <!-- Deposit Modal -->
@@ -1317,1111 +1366,1182 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <script>
-        // =====================
-        // CONFIGURATION
-        // =====================
-        const firebaseConfig = {
-            apiKey: "AIzaSyAYDVkQygUuLtS8ZIRJF6m1s3t-_hF89DY",
-            authDomain: "invitegain-6ce0d.firebaseapp.com",
-            projectId: "invitegain-6ce0d",
-            storageBucket: "invitegain-6ce0d.firebasestorage.app",
-            messagingSenderId: "586313606242",
-            appId: "1:586313606242:web:ae8da69bb8003bdd799d3b",
-            measurementId: "G-T4RBRVEN1F"
-        };
+   <script>
+    // =====================
+    // CONFIGURATION
+    // =====================
+    const firebaseConfig = {
+        apiKey: "AIzaSyAYDVkQygUuLtS8ZIRJF6m1s3t-_hF89DY",
+        authDomain: "invitegain-6ce0d.firebaseapp.com",
+        projectId: "invitegain-6ce0d",
+        storageBucket: "invitegain-6ce0d.firebasestorage.app",
+        messagingSenderId: "586313606242",
+        appId: "1:586313606242:web:ae8da69bb8003bdd799d3b",
+        measurementId: "G-T4RBRVEN1F"
+    };
 
-        const CLOUDINARY_CLOUD_NAME = "dzcbparia";
-        const CLOUDINARY_UPLOAD_PRESET = "deposit_upload";
+    const CLOUDINARY_CLOUD_NAME = "dzcbparia";
+    const CLOUDINARY_UPLOAD_PRESET = "deposit_upload";
 
-        // =====================
-        // FIREBASE INITIALIZATION
-        // =====================
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+    // =====================
+    // FIREBASE INITIALIZATION
+    // =====================
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-        // =====================
-        // GLOBAL STATE
-        // =====================
-        let currentUser = null;
-        let userData = null;
-        let transactions = [];
-        let unsubscribeFunctions = [];
-        let currentFilter = 'all';
-        let cloudinaryReceiptUrl = '';
+    // =====================
+    // GLOBAL STATE
+    // =====================
+    let currentUser = null;
+    let userData = null;
+    let transactions = [];
+    let unsubscribeFunctions = [];
+    let currentFilter = 'all';
+    let cloudinaryReceiptUrl = '';
 
-        // Payment Details Configuration
-        const paymentDetails = {
-            easypaisa: {
-                name: "EasyPaisa",
-                number: "0312-3456789",
-                accountName: "INVITEGAIN OFFICIAL",
-                instructions: [
-                    "Send money to the number above",
-                    "Save transaction receipt/screenshot",
-                    "Upload receipt in the form below",
-                    "Minimum deposit: 500 PKR"
-                ]
-            },
-            jazzcash: {
-                name: "JazzCash",
-                number: "0300-1234567",
-                accountName: "INVITEGAIN LLC",
-                instructions: [
-                    "Send money to the number above",
-                    "Save transaction receipt/screenshot",
-                    "Upload receipt in the form below",
-                    "Minimum deposit: 500 PKR"
-                ]
-            },
-            bank: {
-                name: "Bank Transfer",
-                number: "1234-5678901-2",
-                accountName: "INVITEGAIN PRIVATE LIMITED",
-                bankName: "Habib Bank Limited",
-                iban: "PK00HABB0000123456789012",
-                instructions: [
-                    "Transfer to the account above",
-                    "Use your User ID as reference",
-                    "Upload transfer receipt",
-                    "Processing time: 1-2 business days"
-                ]
-            },
-            usdt: {
-                name: "USDT (TRC20)",
-                address: "TYg7VKj8r9P4z1q2w3e4r5t6y7u8i9o0p",
-                network: "TRC20 (Tron)",
-                instructions: [
-                    "Send USDT to the address above",
-                    "Network must be TRC20",
-                    "Minimum deposit: $10 worth of USDT",
-                    "Include your User ID in memo"
-                ]
-            }
-        };
+    // Payment Details Configuration
+    const paymentDetails = {
+        easypaisa: {
+            name: "EasyPaisa",
+            number: "0312-3456789",
+            accountName: "INVITEGAIN OFFICIAL",
+            instructions: [
+                "Send money to the number above",
+                "Save transaction receipt/screenshot",
+                "Upload receipt in the form below",
+                "Minimum deposit: 500 PKR"
+            ]
+        },
+        jazzcash: {
+            name: "JazzCash",
+            number: "0300-1234567",
+            accountName: "INVITEGAIN LLC",
+            instructions: [
+                "Send money to the number above",
+                "Save transaction receipt/screenshot",
+                "Upload receipt in the form below",
+                "Minimum deposit: 500 PKR"
+            ]
+        },
+        bank: {
+            name: "Bank Transfer",
+            number: "1234-5678901-2",
+            accountName: "INVITEGAIN PRIVATE LIMITED",
+            bankName: "Habib Bank Limited",
+            iban: "PK00HABB0000123456789012",
+            instructions: [
+                "Transfer to the account above",
+                "Use your User ID as reference",
+                "Upload transfer receipt",
+                "Processing time: 1-2 business days"
+            ]
+        },
+        usdt: {
+            name: "USDT (TRC20)",
+            address: "TYg7VKj8r9P4z1q2w3e4r5t6y7u8i9o0p",
+            network: "TRC20 (Tron)",
+            instructions: [
+                "Send USDT to the address above",
+                "Network must be TRC20",
+                "Minimum deposit: $10 worth of USDT",
+                "Include your User ID in memo"
+            ]
+        }
+    };
 
-        // =====================
-        // INITIALIZATION
-        // =====================
-        document.addEventListener('DOMContentLoaded', () => {
-            initializePage();
+    // =====================
+    // INITIALIZATION
+    // =====================
+    document.addEventListener('DOMContentLoaded', () => {
+        initializePage();
+    });
+
+    async function initializePage() {
+        try {
+            // First check authentication
+            await checkAuthState();
+            
+            // Setup all event listeners
+            setupEventListeners();
+            
+            // Enable all buttons and elements
+            enableAllInteractiveElements();
+            
+            console.log('Page initialized successfully');
+        } catch (error) {
+            console.error('Initialization error:', error);
+            showToast('Failed to initialize page', 'error');
+        }
+    }
+
+    // Check authentication state
+    async function checkAuthState() {
+        return new Promise((resolve) => {
+            auth.onAuthStateChanged(async (user) => {
+                if (!user) {
+                    // User is not logged in, redirect to index.html
+                    window.location.href = 'index.html';
+                    resolve(false);
+                } else {
+                    // User is logged in
+                    currentUser = user;
+                    console.log('User authenticated:', user.email);
+                    
+                    // Ensure user document exists
+                    await ensureUserDocument(user.uid, user.email);
+                    // Load user data
+                    await loadUserData(user.uid);
+                    // Setup realtime listeners
+                    setupRealtimeListeners(user.uid);
+                    
+                    showToast('Welcome Back!', 'success');
+                    resolve(true);
+                }
+            });
         });
+    }
 
-        async function initializePage() {
-            try {
-                // First check authentication
-                await checkAuthState();
-                
-                // Setup all event listeners
-                setupEventListeners();
-                
-                // Enable all buttons and elements
-                enableAllInteractiveElements();
-                
-                console.log('Page initialized successfully');
-            } catch (error) {
-                console.error('Initialization error:', error);
-                showToast('Failed to initialize page', 'error');
-            }
-        }
+    // =====================
+    // ENABLE ALL ELEMENTS
+    // =====================
+    function enableAllInteractiveElements() {
+        // Enable all buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.disabled = false;
+            btn.style.pointerEvents = 'auto';
+            btn.style.opacity = '1';
+            btn.classList.remove('loading');
+        });
+        
+        // Enable all option items
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.style.pointerEvents = 'auto';
+            item.style.opacity = '1';
+            item.style.cursor = 'pointer';
+        });
+        
+        // Enable all form inputs
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            input.disabled = false;
+            input.style.pointerEvents = 'auto';
+        });
+        
+        console.log('All interactive elements enabled');
+    }
 
-        // Check authentication state - FIXED
-        async function checkAuthState() {
-            return new Promise((resolve) => {
-                auth.onAuthStateChanged(async (user) => {
-                    if (!user) {
-                        // User is not logged in, redirect to index.html
-                        window.location.href = 'index.html';
-                        resolve(false);
-                    } else {
-                        // User is logged in
-                        currentUser = user;
-                        console.log('User authenticated:', user.email);
-                        
-                        // Ensure user document exists
-                        await ensureUserDocument(user.uid, user.email);
-                        // Load user data
-                        await loadUserData(user.uid);
-                        // Setup realtime listeners
-                        setupRealtimeListeners(user.uid);
-                        
-                        showToast('Welcome Back!', 'success');
-                        resolve(true);
-                    }
-                });
+    // =====================
+    // EVENT LISTENERS - FIXED
+    // =====================
+    function setupEventListeners() {
+        // Dashboard and Investment buttons - intercept clicks
+        const dashboardBtn = document.getElementById('dashboardBtn');
+        if (dashboardBtn) dashboardBtn.addEventListener('click', showFeatureComingSoon);
+        
+        const investmentBtn = document.getElementById('investmentBtn');
+        if (investmentBtn) investmentBtn.addEventListener('click', showFeatureComingSoon);
+        
+        // Quick Actions - using safe element check
+        const depositOption = document.getElementById('depositOption');
+        if (depositOption) depositOption.addEventListener('click', () => openModal('depositModal'));
+        
+        const withdrawOption = document.getElementById('withdrawOption');
+        if (withdrawOption) withdrawOption.addEventListener('click', () => openModal('withdrawModal'));
+        
+        const changePasswordOption = document.getElementById('changePasswordOption');
+        if (changePasswordOption) changePasswordOption.addEventListener('click', openChangePassword);
+        
+        const referralLinkOption = document.getElementById('referralLinkOption');
+        if (referralLinkOption) referralLinkOption.addEventListener('click', copyReferralLink);
+        
+        const investmentHistoryOption = document.getElementById('investmentHistoryOption');
+        if (investmentHistoryOption) investmentHistoryOption.addEventListener('click', openInvestmentHistory);
+        
+        // Buttons - using safe element check
+        const refreshWalletBtn = document.getElementById('refreshWalletBtn');
+        if (refreshWalletBtn) refreshWalletBtn.addEventListener('click', refreshWallet);
+        
+        const viewAllTransactionsBtn = document.getElementById('viewAllTransactionsBtn');
+        if (viewAllTransactionsBtn) viewAllTransactionsBtn.addEventListener('click', viewAllTransactions);
+        
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) logoutBtn.addEventListener('click', logoutUser);
+        
+        // Notification button
+        const notificationBtn = document.getElementById('notificationBtn');
+        if (notificationBtn) notificationBtn.addEventListener('click', showNotifications);
+        
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const filter = e.target.dataset.filter;
+                filterTransactions(filter);
             });
-        }
-
-        // =====================
-        // ENABLE ALL ELEMENTS - FIXED
-        // =====================
-        function enableAllInteractiveElements() {
-            // Enable all buttons
-            document.querySelectorAll('button').forEach(btn => {
-                btn.disabled = false;
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
-                btn.classList.remove('loading');
-            });
-            
-            // Enable all option items
-            document.querySelectorAll('.option-item').forEach(item => {
-                item.style.pointerEvents = 'auto';
-                item.style.opacity = '1';
-                item.style.cursor = 'pointer';
-            });
-            
-            // Enable all form inputs
-            document.querySelectorAll('input, select, textarea').forEach(input => {
-                input.disabled = false;
-                input.style.pointerEvents = 'auto';
-            });
-            
-            console.log('All interactive elements enabled');
-        }
-
-        // =====================
-        // EVENT LISTENERS - FIXED
-        // =====================
-        function setupEventListeners() {
-            // Navigation buttons
-            document.getElementById('dashboardBtn').addEventListener('click', () => {
-                window.location.href = 'dashboard.html';
-            });
-            
-            document.getElementById('investmentBtn').addEventListener('click', () => {
-                window.location.href = 'investment.html';
-            });
-            
-            document.getElementById('referralBtn').addEventListener('click', () => {
-                window.location.href = 'referral.html';
-            });
-            
-            document.getElementById('profileBtn').addEventListener('click', () => {
-                // Already on profile page
-            });
-            
-            // Quick Actions
-            document.getElementById('depositOption').addEventListener('click', () => openModal('depositModal'));
-            document.getElementById('withdrawOption').addEventListener('click', () => openModal('withdrawModal'));
-            document.getElementById('changePasswordOption').addEventListener('click', openChangePassword);
-            document.getElementById('referralLinkOption').addEventListener('click', copyReferralLink);
-            document.getElementById('investmentHistoryOption').addEventListener('click', openInvestmentHistory);
-            
-            // Buttons
-            document.getElementById('refreshWalletBtn').addEventListener('click', refreshWallet);
-            document.getElementById('viewAllTransactionsBtn').addEventListener('click', viewAllTransactions);
-            document.getElementById('logoutBtn').addEventListener('click', logoutUser);
-            
-            // Notification button
-            document.getElementById('notificationBtn').addEventListener('click', showNotifications);
-            
-            // Filter buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const filter = e.target.dataset.filter;
-                    filterTransactions(filter);
-                });
-            });
-            
-            // Deposit modal
-            document.getElementById('depositMethod').addEventListener('change', updatePaymentInfo);
-            document.getElementById('uploadReceiptBtn').addEventListener('click', uploadReceipt);
-            document.getElementById('submitDepositBtn').addEventListener('click', submitDeposit);
-            document.getElementById('cancelDepositBtn').addEventListener('click', () => closeModal('depositModal'));
-            document.getElementById('closeDepositModal').addEventListener('click', () => closeModal('depositModal'));
-            
-            // Withdraw modal
-            document.getElementById('submitWithdrawBtn').addEventListener('click', submitWithdraw);
-            document.getElementById('cancelWithdrawBtn').addEventListener('click', () => closeModal('withdrawModal'));
-            document.getElementById('closeWithdrawModal').addEventListener('click', () => closeModal('withdrawModal'));
-            
-            // Receipt modal
-            document.getElementById('closeReceiptModal').addEventListener('click', () => closeModal('receiptModal'));
-            
-            // Close modals on overlay click
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.classList.remove('active');
-                    }
-                });
-            });
-            
-            // Close modals with Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeAllModals();
+        });
+        
+        // Deposit modal elements
+        const depositMethod = document.getElementById('depositMethod');
+        if (depositMethod) depositMethod.addEventListener('change', updatePaymentInfo);
+        
+        const uploadReceiptBtn = document.getElementById('uploadReceiptBtn');
+        if (uploadReceiptBtn) uploadReceiptBtn.addEventListener('click', uploadReceipt);
+        
+        const submitDepositBtn = document.getElementById('submitDepositBtn');
+        if (submitDepositBtn) submitDepositBtn.addEventListener('click', submitDeposit);
+        
+        const cancelDepositBtn = document.getElementById('cancelDepositBtn');
+        if (cancelDepositBtn) cancelDepositBtn.addEventListener('click', () => closeModal('depositModal'));
+        
+        const closeDepositModal = document.getElementById('closeDepositModal');
+        if (closeDepositModal) closeDepositModal.addEventListener('click', () => closeModal('depositModal'));
+        
+        // Withdraw modal elements
+        const submitWithdrawBtn = document.getElementById('submitWithdrawBtn');
+        if (submitWithdrawBtn) submitWithdrawBtn.addEventListener('click', submitWithdraw);
+        
+        const cancelWithdrawBtn = document.getElementById('cancelWithdrawBtn');
+        if (cancelWithdrawBtn) cancelWithdrawBtn.addEventListener('click', () => closeModal('withdrawModal'));
+        
+        const closeWithdrawModal = document.getElementById('closeWithdrawModal');
+        if (closeWithdrawModal) closeWithdrawModal.addEventListener('click', () => closeModal('withdrawModal'));
+        
+        // Receipt modal
+        const closeReceiptModal = document.getElementById('closeReceiptModal');
+        if (closeReceiptModal) closeReceiptModal.addEventListener('click', () => closeModal('receiptModal'));
+        
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
                 }
             });
-            
-            console.log('Event listeners setup complete');
-        }
-
-        // =====================
-        // USER DATA MANAGEMENT
-        // =====================
-        async function ensureUserDocument(userId, userEmail) {
-            try {
-                const userDoc = await db.collection('users').doc(userId).get();
-                
-                if (!userDoc.exists) {
-                    const referralCode = "UMA" + Math.floor(1000 + Math.random() * 9000);
-                    
-                    await db.collection('users').doc(userId).set({
-                        uid: userId,
-                        email: userEmail,
-                        fullName: "",
-                        username: "",
-                        phone: "",
-                        referralCode: referralCode,
-                        referredBy: null,
-                        balance: 0,
-                        accountBalance: 0,
-                        totalInvested: 0,
-                        totalProfit: 0,
-                        activeInvestments: 0,
-                        referralEarnings: 0,
-                        totalReferrals: 0,
-                        activeReferrals: 0,
-                        totalDeposit: 0,
-                        totalWithdraw: 0,
-                        totalEarnings: 0,
-                        status: "active",
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true });
-                    
-                    console.log('Created new user document for:', userEmail);
-                }
-            } catch (error) {
-                console.error('Error ensuring user document:', error);
+        });
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAllModals();
             }
-        }
+        });
+        
+        console.log('Event listeners setup complete');
+    }
 
-        async function loadUserData(userId) {
-            try {
-                const userDoc = await db.collection('users').doc(userId).get();
+    // =====================
+    // FEATURE COMING SOON MESSAGE
+    // =====================
+    function showFeatureComingSoon() {
+        showCustomToast(
+            '🚀 Coming Soon!',
+            'Dashboard and Investment will be available after 10 days. For now, you can earn via Referral only. Deposit bonus: +20% on every deposit. Withdraw will be available when your referral earnings become equal to your deposit.',
+            'warning'
+        );
+    }
+
+    function showCustomToast(title, message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            info: 'fa-info-circle',
+            warning: 'fa-rocket'
+        };
+
+        toast.innerHTML = `
+            <i class="fas ${icons[type]}" style="color: var(--warning); font-size: 1.2rem;"></i>
+            <div style="flex: 1; margin-left: 10px;">
+                <div style="font-weight: 600; margin-bottom: 4px; font-size: 0.95rem; color: var(--warning);">${title}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">${message}</div>
+            </div>
+            <button class="modal-close" style="width: 28px; height: 28px; font-size: 1rem;" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+        document.getElementById('toastContainer').appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+    }
+
+    // =====================
+    // USER DATA MANAGEMENT
+    // =====================
+    async function ensureUserDocument(userId, userEmail) {
+        try {
+            const userDoc = await db.collection('users').doc(userId).get();
+            
+            if (!userDoc.exists) {
+                const referralCode = "UMA" + Math.floor(1000 + Math.random() * 9000);
                 
-                if (userDoc.exists) {
-                    userData = { ...userDoc.data(), id: userId };
+                await db.collection('users').doc(userId).set({
+                    uid: userId,
+                    email: userEmail,
+                    fullName: "",
+                    username: "",
+                    phone: "",
+                    referralCode: referralCode,
+                    referredBy: null,
+                    balance: 0,
+                    accountBalance: 0,
+                    totalInvested: 0,
+                    totalProfit: 0,
+                    activeInvestments: 0,
+                    referralEarnings: 0,
+                    totalReferrals: 0,
+                    activeReferrals: 0,
+                    totalDeposit: 0,
+                    totalWithdraw: 0,
+                    totalEarnings: 0,
+                    status: "active",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                
+                console.log('Created new user document for:', userEmail);
+            }
+        } catch (error) {
+            console.error('Error ensuring user document:', error);
+        }
+    }
+
+    async function loadUserData(userId) {
+        try {
+            const userDoc = await db.collection('users').doc(userId).get();
+            
+            if (userDoc.exists) {
+                userData = { ...userDoc.data(), id: userId };
+                updateUI();
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
+            showToast('Failed to load user data', 'error');
+        }
+    }
+
+    function setupRealtimeListeners(userId) {
+        // User data listener
+        const userUnsubscribe = db.collection('users').doc(userId)
+            .onSnapshot((doc) => {
+                if (doc.exists) {
+                    userData = { ...doc.data(), id: userId };
                     updateUI();
                 }
-            } catch (error) {
-                console.error('Error loading user data:', error);
-                showToast('Failed to load user data', 'error');
-            }
-        }
+            }, (error) => {
+                console.error('User data listener error:', error);
+            });
+        unsubscribeFunctions.push(userUnsubscribe);
 
-        function setupRealtimeListeners(userId) {
-            // User data listener
-            const userUnsubscribe = db.collection('users').doc(userId)
-                .onSnapshot((doc) => {
-                    if (doc.exists) {
-                        userData = { ...doc.data(), id: userId };
-                        updateUI();
-                    }
-                }, (error) => {
-                    console.error('User data listener error:', error);
+        // Transactions listener
+        const transactionsUnsubscribe = db.collection('transactions')
+            .where('userId', '==', userId)
+            .orderBy('timestamp', 'desc')
+            .onSnapshot((snapshot) => {
+                transactions = [];
+                snapshot.forEach(doc => {
+                    transactions.push({ id: doc.id, ...doc.data() });
                 });
-            unsubscribeFunctions.push(userUnsubscribe);
-
-            // Transactions listener
-            const transactionsUnsubscribe = db.collection('transactions')
-                .where('userId', '==', userId)
-                .orderBy('timestamp', 'desc')
-                .onSnapshot((snapshot) => {
-                    transactions = [];
-                    snapshot.forEach(doc => {
-                        transactions.push({ id: doc.id, ...doc.data() });
-                    });
-                    updateTransactionsUI();
-                    updateTransactionStats();
-                }, (error) => {
-                    console.error('Transactions listener error:', error);
-                });
-            unsubscribeFunctions.push(transactionsUnsubscribe);
-        }
-
-        // =====================
-        // UI UPDATES
-        // =====================
-        function updateUI() {
-            if (!userData || !currentUser) return;
-
-            // Update avatar
-            const avatar = document.getElementById('userAvatar');
-            if (userData.photoURL) {
-                avatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="avatar-img">`;
-            } else {
-                const name = userData.fullName || currentUser.displayName || currentUser.email;
-                const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substr(0, 2);
-                avatar.textContent = initials;
-                avatar.style.background = `linear-gradient(45deg, ${getColorFromName(name)}, ${getColorFromName(name + '2')})`;
-            }
-
-            // Update user info
-            document.getElementById('userName').textContent = 
-                userData.fullName || currentUser.displayName || 'User';
-            document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('userId').textContent = currentUser.uid.substring(0, 8).toUpperCase();
-
-            // Update wallet stats
-            const balance = userData.accountBalance || 0;
-            const earnings = userData.totalEarnings || 0;
-            const totalDeposit = userData.totalDeposit || 0;
-            const totalWithdraw = userData.totalWithdraw || 0;
-            const referralEarnings = userData.referralEarnings || 0;
-            const totalInvestment = userData.totalInvested || 0;
-
-            document.getElementById('walletBalance').textContent = `${formatCurrency(balance)} PKR`;
-            document.getElementById('totalEarnings').textContent = `${formatCurrency(earnings)} PKR`;
-            document.getElementById('totalDeposit').textContent = `${formatCurrency(totalDeposit)} PKR`;
-            document.getElementById('totalWithdraw').textContent = `${formatCurrency(totalWithdraw)} PKR`;
-            document.getElementById('referralEarnings').textContent = `${formatCurrency(referralEarnings)} PKR`;
-            document.getElementById('totalInvestment').textContent = `${formatCurrency(totalInvestment)} PKR`;
-
-            // Update status badge
-            const statusBadge = document.getElementById('statusBadge');
-            const status = userData.status || 'Active';
-            statusBadge.textContent = status;
-            statusBadge.className = `status-badge status-${status.toLowerCase()}`;
-        }
-
-        function updateTransactionsUI() {
-            const container = document.getElementById('transactionsList');
-            
-            if (transactions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exchange-alt"></i>
-                        <p>No transactions yet</p>
-                    </div>`;
-                return;
-            }
-
-            let filteredTransactions = transactions;
-            if (currentFilter !== 'all') {
-                filteredTransactions = transactions.filter(t => {
-                    if (currentFilter === 'pending') return t.status === 'pending';
-                    if (currentFilter === 'deposit') return t.type === 'deposit';
-                    if (currentFilter === 'withdraw') return t.type === 'withdraw';
-                    return true;
-                });
-            }
-
-            if (filteredTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-filter"></i>
-                        <p>No ${currentFilter} transactions found</p>
-                    </div>`;
-                return;
-            }
-
-            let html = '';
-            filteredTransactions.slice(0, 10).forEach(transaction => {
-                const date = transaction.timestamp?.toDate?.() || new Date();
-                const formattedDate = formatDate(date);
-                
-                const icon = transaction.type === 'deposit' ? 'fa-arrow-down' : 'fa-arrow-up';
-                const amountClass = transaction.type === 'deposit' ? 'deposit' : 'withdraw';
-                const sign = transaction.type === 'deposit' ? '+' : '-';
-                const method = transaction.method ? ` - ${transaction.method.charAt(0).toUpperCase() + transaction.method.slice(1)}` : '';
-
-                html += `
-                    <div class="transaction-item" data-id="${transaction.id}">
-                        <div class="transaction-icon ${transaction.type}">
-                            <i class="fas ${icon}"></i>
-                        </div>
-                        <div class="transaction-info">
-                            <div class="transaction-title">
-                                ${transaction.type === 'deposit' ? 'Deposit' : 'Withdrawal'}${method}
-                            </div>
-                            <div class="transaction-meta">
-                                <span>${formattedDate}</span>
-                                <span>Ref: ${transaction.reference?.substring(0, 8) || 'N/A'}</span>
-                            </div>
-                        </div>
-                        <div class="transaction-amount ${amountClass}">
-                            ${sign}${formatCurrency(transaction.amount || 0)} PKR
-                        </div>
-                        <div class="transaction-status status-${transaction.status}">
-                            ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
-                        </div>
-                    </div>`;
+                updateTransactionsUI();
+                updateTransactionStats();
+            }, (error) => {
+                console.error('Transactions listener error:', error);
             });
+        unsubscribeFunctions.push(transactionsUnsubscribe);
+    }
 
-            container.innerHTML = html;
-            
-            // Add click event listeners to transaction items
-            container.querySelectorAll('.transaction-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    const transactionId = item.dataset.id;
-                    viewTransaction(transactionId);
-                });
+    // =====================
+    // UI UPDATES
+    // =====================
+    function updateUI() {
+        if (!userData || !currentUser) return;
+
+        // Update avatar
+        const avatar = document.getElementById('userAvatar');
+        if (userData.photoURL) {
+            avatar.innerHTML = `<img src="${userData.photoURL}" alt="Profile" class="avatar-img">`;
+        } else {
+            const name = userData.fullName || currentUser.displayName || currentUser.email;
+            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substr(0, 2);
+            avatar.textContent = initials;
+            avatar.style.background = `linear-gradient(45deg, ${getColorFromName(name)}, ${getColorFromName(name + '2')})`;
+        }
+
+        // Update user info
+        document.getElementById('userName').textContent = 
+            userData.fullName || currentUser.displayName || 'User';
+        document.getElementById('userEmail').textContent = currentUser.email;
+        document.getElementById('userId').textContent = currentUser.uid.substring(0, 8).toUpperCase();
+
+        // Update wallet stats
+        const balance = userData.accountBalance || 0;
+        const earnings = userData.totalEarnings || 0;
+        const totalDeposit = userData.totalDeposit || 0;
+        const totalWithdraw = userData.totalWithdraw || 0;
+        const referralEarnings = userData.referralEarnings || 0;
+        const totalInvestment = userData.totalInvested || 0;
+
+        document.getElementById('walletBalance').textContent = `${formatCurrency(balance)} PKR`;
+        document.getElementById('totalEarnings').textContent = `${formatCurrency(earnings)} PKR`;
+        document.getElementById('totalDeposit').textContent = `${formatCurrency(totalDeposit)} PKR`;
+        document.getElementById('totalWithdraw').textContent = `${formatCurrency(totalWithdraw)} PKR`;
+        document.getElementById('referralEarnings').textContent = `${formatCurrency(referralEarnings)} PKR`;
+        document.getElementById('totalInvestment').textContent = `${formatCurrency(totalInvestment)} PKR`;
+
+        // Update status badge
+        const statusBadge = document.getElementById('statusBadge');
+        const status = userData.status || 'Active';
+        statusBadge.textContent = status;
+        statusBadge.className = `status-badge status-${status.toLowerCase()}`;
+    }
+
+    function updateTransactionsUI() {
+        const container = document.getElementById('transactionsList');
+        
+        if (transactions.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exchange-alt"></i>
+                    <p>No transactions yet</p>
+                </div>`;
+            return;
+        }
+
+        let filteredTransactions = transactions;
+        if (currentFilter !== 'all') {
+            filteredTransactions = transactions.filter(t => {
+                if (currentFilter === 'pending') return t.status === 'pending';
+                if (currentFilter === 'deposit') return t.type === 'deposit';
+                if (currentFilter === 'withdraw') return t.type === 'withdraw';
+                return true;
             });
         }
 
-        function filterTransactions(filter) {
-            currentFilter = filter;
-            
-            // Update active button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.filter === filter) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            updateTransactionsUI();
+        if (filteredTransactions.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-filter"></i>
+                    <p>No ${currentFilter} transactions found</p>
+                </div>`;
+            return;
         }
 
-        function updateTransactionStats() {
-            if (!transactions.length) return;
-
-            let pendingDeposit = 0;
-            let pendingWithdraw = 0;
-
-            transactions.forEach(transaction => {
-                if (transaction.type === 'deposit' && transaction.status === 'pending') {
-                    pendingDeposit++;
-                } else if (transaction.type === 'withdraw' && transaction.status === 'pending') {
-                    pendingWithdraw++;
-                }
-            });
-
-            // Update badges
-            const depositBadge = document.getElementById('pendingDepositsBadge');
-            const withdrawBadge = document.getElementById('pendingWithdrawsBadge');
-            const notificationBadge = document.getElementById('notificationBadge');
-
-            if (pendingDeposit > 0) {
-                depositBadge.textContent = pendingDeposit;
-                depositBadge.style.display = 'flex';
-            } else {
-                depositBadge.style.display = 'none';
-            }
-
-            if (pendingWithdraw > 0) {
-                withdrawBadge.textContent = pendingWithdraw;
-                withdrawBadge.style.display = 'flex';
-            } else {
-                withdrawBadge.style.display = 'none';
-            }
-
-            const totalPending = pendingDeposit + pendingWithdraw;
-            if (totalPending > 0) {
-                notificationBadge.textContent = totalPending;
-                notificationBadge.style.display = 'flex';
-            } else {
-                notificationBadge.style.display = 'none';
-            }
-        }
-
-        // =====================
-        // CLOUDINARY UPLOAD
-        // =====================
-        function uploadReceipt() {
-            if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-                showToast('Please set Cloudinary credentials', 'error');
-                return;
-            }
-
-            const myWidget = cloudinary.createUploadWidget({
-                cloudName: CLOUDINARY_CLOUD_NAME,
-                uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-                sources: ['local', 'camera', 'url'],
-                multiple: false,
-                maxFiles: 1,
-                cropping: false,
-                styles: {
-                    palette: {
-                        window: "#0a0a0f",
-                        sourceBg: "#14141e",
-                        windowBorder: "#6366f1",
-                        tabIcon: "#ffffff",
-                        inactiveTabIcon: "#b0b0c0",
-                        menuIcons: "#6c63ff",
-                        link: "#6c63ff",
-                        action: "#00ff88",
-                        inProgress: "#00ff88",
-                        complete: "#00ff88",
-                        error: "#ff4757",
-                        textDark: "#0a0a0f",
-                        textLight: "#ffffff"
-                    }
-                }
-            }, (error, result) => {
-                if (!error && result && result.event === "success") {
-                    cloudinaryReceiptUrl = result.info.secure_url;
-                    
-                    document.getElementById('receiptImagePreview').src = cloudinaryReceiptUrl;
-                    document.getElementById('receiptPreview').style.display = 'block';
-                    document.getElementById('cloudinaryReceiptUrl').value = cloudinaryReceiptUrl;
-                    
-                    showToast('Receipt uploaded successfully!', 'success');
-                } else if (error) {
-                    console.error('Cloudinary upload error:', error);
-                    showToast('Failed to upload receipt', 'error');
-                }
-            });
-
-            myWidget.open();
-        }
-
-        // =====================
-        // DEPOSIT SYSTEM
-        // =====================
-        function updatePaymentInfo() {
-            const method = document.getElementById('depositMethod').value;
-            const details = paymentDetails[method];
-            const infoDiv = document.getElementById('paymentInfo');
+        let html = '';
+        filteredTransactions.slice(0, 10).forEach(transaction => {
+            const date = transaction.timestamp?.toDate?.() || new Date();
+            const formattedDate = formatDate(date);
             
-            let html = `
-                <div class="payment-method-title">${details.name} Details</div>
-                <div class="payment-details">`;
-            
-            if (method === 'usdt') {
-                html += `
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">Wallet Address:</span>
-                        <span class="payment-detail-value">${details.address}</span>
-                    </div>
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">Network:</span>
-                        <span class="payment-detail-value">${details.network}</span>
-                    </div>
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">Account:</span>
-                        <span class="payment-detail-value">${details.accountName || 'INVITEGAIN'}</span>
-                    </div>`;
-            } else if (method === 'bank') {
-                html += `
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">Bank:</span>
-                        <span class="payment-detail-value">${details.bankName}</span>
-                    </div>
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">Account Number:</span>
-                        <span class="payment-detail-value">${details.number}</span>
-                    </div>
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">Account Title:</span>
-                        <span class="payment-detail-value">${details.accountName}</span>
-                    </div>
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">IBAN:</span>
-                        <span class="payment-detail-value">${details.iban}</span>
-                    </div>`;
-            } else {
-                html += `
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">${details.name} Number:</span>
-                        <span class="payment-detail-value">${details.number}</span>
-                    </div>
-                    <div class="payment-detail-row">
-                        <span class="payment-detail-label">Account Name:</span>
-                        <span class="payment-detail-value">${details.accountName}</span>
-                    </div>`;
-            }
-            
+            const icon = transaction.type === 'deposit' ? 'fa-arrow-down' : 'fa-arrow-up';
+            const amountClass = transaction.type === 'deposit' ? 'deposit' : 'withdraw';
+            const sign = transaction.type === 'deposit' ? '+' : '-';
+            const method = transaction.method ? ` - ${transaction.method.charAt(0).toUpperCase() + transaction.method.slice(1)}` : '';
+
             html += `
-                </div>
-                <button id="copyPaymentDetailsBtn" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 15px;">
-                    <i class="fas fa-copy"></i> Copy Details
-                </button>`;
-            
-            infoDiv.innerHTML = html;
-            
-            // Add event listener to copy button
-            document.getElementById('copyPaymentDetailsBtn').addEventListener('click', () => {
-                copyPaymentDetails(method);
-            });
-        }
-
-        function copyPaymentDetails(method) {
-            const details = paymentDetails[method];
-            let textToCopy = '';
-            
-            if (method === 'usdt') {
-                textToCopy = `Wallet Address: ${details.address}\nNetwork: ${details.network}\nAccount: ${details.accountName}`;
-            } else if (method === 'bank') {
-                textToCopy = `Bank: ${details.bankName}\nAccount Number: ${details.number}\nAccount Title: ${details.accountName}\nIBAN: ${details.iban}`;
-            } else {
-                textToCopy = `${details.name} Number: ${details.number}\nAccount Name: ${details.accountName}`;
-            }
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                showToast('Payment details copied to clipboard!', 'success');
-            }).catch(() => {
-                showToast('Failed to copy details', 'error');
-            });
-        }
-
-        async function submitDeposit() {
-            if (!currentUser) {
-                showToast('You must be logged in to deposit', 'error');
-                return;
-            }
-
-            const amount = parseFloat(document.getElementById('depositAmount').value);
-            const method = document.getElementById('depositMethod').value;
-            const transactionId = document.getElementById('transactionId').value.trim();
-            const notes = document.getElementById('depositNotes').value.trim();
-            const btn = document.getElementById('submitDepositBtn');
-
-            // Validation
-            clearErrors();
-            let isValid = true;
-
-            if (!amount || amount < 500) {
-                showError('depositAmount', 'Minimum deposit is 500 PKR');
-                isValid = false;
-            }
-
-            if (!transactionId) {
-                showError('transactionId', 'Transaction ID is required');
-                isValid = false;
-            }
-
-            if (!cloudinaryReceiptUrl) {
-                showError('depositProof', 'Please upload receipt');
-                isValid = false;
-            }
-
-            if (!isValid) return;
-
-            setLoading(btn, true);
-
-            try {
-                const transactionData = {
-                    userId: currentUser.uid,
-                    userEmail: currentUser.email,
-                    userName: userData?.fullName || currentUser.displayName || 'User',
-                    type: 'deposit',
-                    method: method,
-                    amount: amount,
-                    reference: transactionId,
-                    notes: notes,
-                    screenshotUrl: cloudinaryReceiptUrl,
-                    status: 'pending',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                };
-
-                // Add to deposits collection
-                await db.collection('deposits').add({
-                    uid: currentUser.uid,
-                    username: userData?.fullName || currentUser.displayName || 'User',
-                    email: currentUser.email,
-                    amount: amount,
-                    method: method,
-                    screenshotUrl: cloudinaryReceiptUrl,
-                    status: 'pending',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // Also add to transactions collection for user view
-                await db.collection('transactions').add(transactionData);
-
-                showToast('Deposit request submitted for review!', 'success');
-                
-                closeModal('depositModal');
-                resetDepositForm();
-
-            } catch (error) {
-                console.error('Deposit error:', error);
-                showToast('Failed to submit deposit', 'error');
-            } finally {
-                setLoading(btn, false);
-            }
-        }
-
-        // =====================
-        // WITHDRAWAL SYSTEM
-        // =====================
-        async function submitWithdraw() {
-            if (!currentUser) {
-                showToast('You must be logged in to withdraw', 'error');
-                return;
-            }
-
-            const amount = parseFloat(document.getElementById('withdrawAmount').value);
-            const method = document.getElementById('withdrawMethod').value;
-            const accountNumber = document.getElementById('accountNumber').value.trim();
-            const accountName = document.getElementById('accountName').value.trim();
-            const bankName = document.getElementById('bankName').value.trim();
-            const btn = document.getElementById('submitWithdrawBtn');
-
-            // Validation
-            clearErrors();
-            let isValid = true;
-
-            if (!amount || amount < 500) {
-                showError('withdrawAmount', 'Minimum withdrawal is 500 PKR');
-                isValid = false;
-            }
-
-            if (!accountNumber) {
-                showError('accountNumber', 'Account number is required');
-                isValid = false;
-            }
-
-            if (!accountName) {
-                showError('accountName', 'Account holder name is required');
-                isValid = false;
-            }
-
-            if (!isValid) return;
-
-            // Check account balance
-            const accountBalance = userData?.accountBalance || 0;
-
-            if (amount > accountBalance) {
-                showError('withdrawAmount', 'Insufficient account balance');
-                return;
-            }
-
-            setLoading(btn, true);
-
-            try {
-                const withdrawData = {
-                    userId: currentUser.uid,
-                    userEmail: currentUser.email,
-                    userName: userData?.fullName || currentUser.displayName || 'User',
-                    type: 'withdraw',
-                    method: method,
-                    amount: amount,
-                    accountDetails: {
-                        number: accountNumber,
-                        name: accountName,
-                        bank: bankName
-                    },
-                    status: 'pending',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                };
-
-                // Add to transactions collection
-                await db.collection('transactions').add(withdrawData);
-
-                // Update user's account balance
-                await db.collection('users').doc(currentUser.uid).update({
-                    accountBalance: firebase.firestore.FieldValue.increment(-amount),
-                    totalWithdraw: firebase.firestore.FieldValue.increment(amount),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                showToast('Withdrawal request submitted for review!', 'success');
-                
-                closeModal('withdrawModal');
-                resetWithdrawForm();
-
-            } catch (error) {
-                console.error('Withdrawal error:', error);
-                showToast('Failed to submit withdrawal', 'error');
-            } finally {
-                setLoading(btn, false);
-            }
-        }
-
-        // =====================
-        // VIEW TRANSACTION DETAILS
-        // =====================
-        async function viewTransaction(transactionId) {
-            try {
-                const transaction = transactions.find(t => t.id === transactionId);
-                if (!transaction) return;
-
-                const date = transaction.timestamp?.toDate?.() || new Date();
-                const formattedDate = formatDate(date, true);
-
-                let detailsHtml = `
-                    <div style="margin-bottom: 15px;">
-                        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 10px;">Transaction Details</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                            <div>
-                                <div style="color: var(--text-secondary); font-size: 0.8rem;">Type</div>
-                                <div style="font-weight: 600;">${transaction.type === 'deposit' ? 'Deposit' : 'Withdrawal'}</div>
-                            </div>
-                            <div>
-                                <div style="color: var(--text-secondary); font-size: 0.8rem;">Method</div>
-                                <div style="font-weight: 600;">${transaction.method || 'N/A'}</div>
-                            </div>
-                            <div>
-                                <div style="color: var(--text-secondary); font-size: 0.8rem;">Amount</div>
-                                <div style="font-weight: 600; color: ${transaction.type === 'deposit' ? 'var(--success)' : 'var(--danger)'}">
-                                    ${transaction.type === 'deposit' ? '+' : '-'}${formatCurrency(transaction.amount || 0)} PKR
-                                </div>
-                            </div>
-                            <div>
-                                <div style="color: var(--text-secondary); font-size: 0.8rem;">Status</div>
-                                <div class="transaction-status status-${transaction.status}" style="display: inline-block; margin-top: 5px;">
-                                    ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
-                                </div>
-                            </div>
-                            <div>
-                                <div style="color: var(--text-secondary); font-size: 0.8rem;">Date</div>
-                                <div style="font-weight: 600;">${formattedDate}</div>
-                            </div>
-                            <div>
-                                <div style="color: var(--text-secondary); font-size: 0.8rem;">Reference</div>
-                                <div style="font-weight: 600; font-family: monospace; font-size: 0.8rem;">${transaction.reference || 'N/A'}</div>
-                            </div>
+                <div class="transaction-item" data-id="${transaction.id}">
+                    <div class="transaction-icon ${transaction.type}">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="transaction-info">
+                        <div class="transaction-title">
+                            ${transaction.type === 'deposit' ? 'Deposit' : 'Withdrawal'}${method}
                         </div>
-                    </div>`;
+                        <div class="transaction-meta">
+                            <span>${formattedDate}</span>
+                            <span>Ref: ${transaction.reference?.substring(0, 8) || 'N/A'}</span>
+                        </div>
+                    </div>
+                    <div class="transaction-amount ${amountClass}">
+                        ${sign}${formatCurrency(transaction.amount || 0)} PKR
+                    </div>
+                    <div class="transaction-status status-${transaction.status}">
+                        ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                    </div>
+                </div>`;
+        });
 
-                if (transaction.notes) {
-                    detailsHtml += `
-                        <div style="margin-bottom: 15px;">
-                            <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 5px;">Notes</div>
-                            <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 0.85rem;">
-                                ${transaction.notes}
-                            </div>
-                        </div>`;
+        container.innerHTML = html;
+        
+        // Add click event listeners to transaction items
+        container.querySelectorAll('.transaction-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const transactionId = item.dataset.id;
+                viewTransaction(transactionId);
+            });
+        });
+    }
+
+    function filterTransactions(filter) {
+        currentFilter = filter;
+        
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.filter === filter) {
+                btn.classList.add('active');
+            }
+        });
+        
+        updateTransactionsUI();
+    }
+
+    function updateTransactionStats() {
+        if (!transactions.length) return;
+
+        let pendingDeposit = 0;
+        let pendingWithdraw = 0;
+
+        transactions.forEach(transaction => {
+            if (transaction.type === 'deposit' && transaction.status === 'pending') {
+                pendingDeposit++;
+            } else if (transaction.type === 'withdraw' && transaction.status === 'pending') {
+                pendingWithdraw++;
+            }
+        });
+
+        // Update badges
+        const depositBadge = document.getElementById('pendingDepositsBadge');
+        const withdrawBadge = document.getElementById('pendingWithdrawsBadge');
+        const notificationBadge = document.getElementById('notificationBadge');
+
+        if (pendingDeposit > 0) {
+            depositBadge.textContent = pendingDeposit;
+            depositBadge.style.display = 'flex';
+        } else {
+            depositBadge.style.display = 'none';
+        }
+
+        if (pendingWithdraw > 0) {
+            withdrawBadge.textContent = pendingWithdraw;
+            withdrawBadge.style.display = 'flex';
+        } else {
+            withdrawBadge.style.display = 'none';
+        }
+
+        const totalPending = pendingDeposit + pendingWithdraw;
+        if (totalPending > 0) {
+            notificationBadge.textContent = totalPending;
+            notificationBadge.style.display = 'flex';
+        } else {
+            notificationBadge.style.display = 'none';
+        }
+    }
+
+    // =====================
+    // CLOUDINARY UPLOAD
+    // =====================
+    function uploadReceipt() {
+        if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+            showToast('Please set Cloudinary credentials', 'error');
+            return;
+        }
+
+        const myWidget = cloudinary.createUploadWidget({
+            cloudName: CLOUDINARY_CLOUD_NAME,
+            uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+            sources: ['local', 'camera', 'url'],
+            multiple: false,
+            maxFiles: 1,
+            cropping: false,
+            styles: {
+                palette: {
+                    window: "#0a0a0f",
+                    sourceBg: "#14141e",
+                    windowBorder: "#6366f1",
+                    tabIcon: "#ffffff",
+                    inactiveTabIcon: "#b0b0c0",
+                    menuIcons: "#6c63ff",
+                    link: "#6c63ff",
+                    action: "#00ff88",
+                    inProgress: "#00ff88",
+                    complete: "#00ff88",
+                    error: "#ff4757",
+                    textDark: "#0a0a0f",
+                    textLight: "#ffffff"
                 }
-
-                document.getElementById('receiptDetails').innerHTML = detailsHtml;
-
-                if (transaction.screenshotUrl) {
-                    document.getElementById('receiptImage').src = transaction.screenshotUrl;
-                    document.getElementById('receiptImage').style.display = 'block';
-                } else {
-                    document.getElementById('receiptImage').style.display = 'none';
-                }
-
-                openModal('receiptModal');
-            } catch (error) {
-                console.error('Error viewing transaction:', error);
-                showToast('Failed to load transaction details', 'error');
             }
-        }
-
-        // =====================
-        // ACCOUNT FUNCTIONS
-        // =====================
-        function copyReferralLink() {
-            if (!currentUser) {
-                showToast('Please wait while we load your account', 'error');
-                return;
+        }, (error, result) => {
+            if (!error && result && result.event === "success") {
+                cloudinaryReceiptUrl = result.info.secure_url;
+                
+                document.getElementById('receiptImagePreview').src = cloudinaryReceiptUrl;
+                document.getElementById('receiptPreview').style.display = 'block';
+                document.getElementById('cloudinaryReceiptUrl').value = cloudinaryReceiptUrl;
+                
+                showToast('Receipt uploaded successfully!', 'success');
+            } else if (error) {
+                console.error('Cloudinary upload error:', error);
+                showToast('Failed to upload receipt', 'error');
             }
-            
-            const referralLink = `${window.location.origin}/register.html?ref=${currentUser.uid}`;
-            navigator.clipboard.writeText(referralLink).then(() => {
-                showToast('Referral link copied to clipboard!', 'success');
-            }).catch(() => {
-                showToast('Failed to copy link', 'error');
-            });
+        });
+
+        myWidget.open();
+    }
+
+    // =====================
+    // DEPOSIT SYSTEM
+    // =====================
+    function updatePaymentInfo() {
+        const method = document.getElementById('depositMethod').value;
+        const details = paymentDetails[method];
+        const infoDiv = document.getElementById('paymentInfo');
+        
+        let html = `
+            <div class="payment-method-title">${details.name} Details</div>
+            <div class="payment-details">`;
+        
+        if (method === 'usdt') {
+            html += `
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">Wallet Address:</span>
+                    <span class="payment-detail-value">${details.address}</span>
+                </div>
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">Network:</span>
+                    <span class="payment-detail-value">${details.network}</span>
+                </div>
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">Account:</span>
+                    <span class="payment-detail-value">${details.accountName || 'INVITEGAIN'}</span>
+                </div>`;
+        } else if (method === 'bank') {
+            html += `
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">Bank:</span>
+                    <span class="payment-detail-value">${details.bankName}</span>
+                </div>
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">Account Number:</span>
+                    <span class="payment-detail-value">${details.number}</span>
+                </div>
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">Account Title:</span>
+                    <span class="payment-detail-value">${details.accountName}</span>
+                </div>
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">IBAN:</span>
+                    <span class="payment-detail-value">${details.iban}</span>
+                </div>`;
+        } else {
+            html += `
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">${details.name} Number:</span>
+                    <span class="payment-detail-value">${details.number}</span>
+                </div>
+                <div class="payment-detail-row">
+                    <span class="payment-detail-label">Account Name:</span>
+                    <span class="payment-detail-value">${details.accountName}</span>
+                </div>`;
+        }
+        
+        html += `
+            </div>
+            <button id="copyPaymentDetailsBtn" class="btn btn-sm btn-secondary" style="width: 100%; margin-top: 15px;">
+                <i class="fas fa-copy"></i> Copy Details
+            </button>`;
+        
+        infoDiv.innerHTML = html;
+        
+        // Add event listener to copy button
+        document.getElementById('copyPaymentDetailsBtn').addEventListener('click', () => {
+            copyPaymentDetails(method);
+        });
+    }
+
+    function copyPaymentDetails(method) {
+        const details = paymentDetails[method];
+        let textToCopy = '';
+        
+        if (method === 'usdt') {
+            textToCopy = `Wallet Address: ${details.address}\nNetwork: ${details.network}\nAccount: ${details.accountName}`;
+        } else if (method === 'bank') {
+            textToCopy = `Bank: ${details.bankName}\nAccount Number: ${details.number}\nAccount Title: ${details.accountName}\nIBAN: ${details.iban}`;
+        } else {
+            textToCopy = `${details.name} Number: ${details.number}\nAccount Name: ${details.accountName}`;
+        }
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showToast('Payment details copied to clipboard!', 'success');
+        }).catch(() => {
+            showToast('Failed to copy details', 'error');
+        });
+    }
+
+    async function submitDeposit() {
+        if (!currentUser) {
+            showToast('You must be logged in to deposit', 'error');
+            return;
         }
 
-        function openInvestmentHistory() {
-            showToast('Investment history feature coming soon!', 'info');
+        const amount = parseFloat(document.getElementById('depositAmount').value);
+        const method = document.getElementById('depositMethod').value;
+        const transactionId = document.getElementById('transactionId').value.trim();
+        const notes = document.getElementById('depositNotes').value.trim();
+        const btn = document.getElementById('submitDepositBtn');
+
+        // Validation
+        clearErrors();
+        let isValid = true;
+
+        if (!amount || amount < 500) {
+            showError('depositAmount', 'Minimum deposit is 500 PKR');
+            isValid = false;
         }
 
-        function showNotifications() {
-            const pending = transactions.filter(t => t.status === 'pending');
-            if (pending.length === 0) {
-                showToast('No pending notifications', 'info');
-                return;
-            }
-
-            let message = `You have ${pending.length} pending transactions:\n\n`;
-            pending.forEach(t => {
-                message += `• ${t.type === 'deposit' ? 'Deposit' : 'Withdrawal'} of ${formatCurrency(t.amount)} PKR\n`;
-            });
-
-            showToast(message, 'info');
+        if (!transactionId) {
+            showError('transactionId', 'Transaction ID is required');
+            isValid = false;
         }
 
-        function openChangePassword() {
-            showToast('Password change feature coming soon!', 'info');
+        if (!cloudinaryReceiptUrl) {
+            showError('depositProof', 'Please upload receipt');
+            isValid = false;
         }
 
-        function viewAllTransactions() {
-            showToast('Full transaction history page coming soon!', 'info');
-        }
+        if (!isValid) return;
 
-        async function refreshWallet() {
-            const btn = document.getElementById('refreshWalletBtn');
-            setLoading(btn, true);
-            
-            if (currentUser) {
-                await loadUserData(currentUser.uid);
-                showToast('Account data updated!', 'success');
-            }
-            
-            setTimeout(() => {
-                setLoading(btn, false);
-            }, 1000);
-        }
+        setLoading(btn, true);
 
-        // =====================
-        // LOGOUT
-        // =====================
-        async function logoutUser() {
-            try {
-                unsubscribeFunctions.forEach(unsubscribe => unsubscribe());
-                await auth.signOut();
-                window.location.href = 'index.html';
-            } catch (error) {
-                console.error('Logout error:', error);
-                showToast('Failed to logout', 'error');
-            }
-        }
-
-        // =====================
-        // MODAL FUNCTIONS
-        // =====================
-        function openModal(modalId) {
-            if (!currentUser) {
-                showToast('Please login first', 'error');
-                return;
-            }
-            
-            document.getElementById(modalId).classList.add('active');
-            if (modalId === 'depositModal') {
-                updatePaymentInfo();
-                updateCurrentAccountBalance();
-                document.getElementById('receiptPreview').style.display = 'none';
-                cloudinaryReceiptUrl = '';
-            } else if (modalId === 'withdrawModal') {
-                updateAccountBalanceInModal();
-            }
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        function closeAllModals() {
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                modal.classList.remove('active');
-            });
-        }
-
-        function updateAccountBalanceInModal() {
-            if (!userData) return;
-            const balance = userData.accountBalance || 0;
-            document.getElementById('modalAccountBalance').textContent = formatCurrency(balance);
-        }
-
-        function updateCurrentAccountBalance() {
-            if (!userData) return;
-            const balance = userData.accountBalance || 0;
-            document.getElementById('currentAccountBalance').textContent = formatCurrency(balance);
-        }
-
-        // =====================
-        // UTILITY FUNCTIONS
-        // =====================
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                info: 'fa-info-circle'
+        try {
+            const transactionData = {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: userData?.fullName || currentUser.displayName || 'User',
+                type: 'deposit',
+                method: method,
+                amount: amount,
+                reference: transactionId,
+                notes: notes,
+                screenshotUrl: cloudinaryReceiptUrl,
+                status: 'pending',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             };
 
-            toast.innerHTML = `
-                <i class="fas ${icons[type]}"></i>
-                <div style="flex: 1; margin-left: 10px;">
-                    <div style="font-weight: 600; margin-bottom: 4px; font-size: 0.95rem;">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
-                    <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">${message}</div>
-                </div>
-                <button class="modal-close" style="width: 28px; height: 28px; font-size: 1rem;" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-
-            document.getElementById('toastContainer').appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 10);
-
-            setTimeout(() => {
-                if (toast.parentElement) {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        if (toast.parentElement) {
-                            toast.remove();
-                        }
-                    }, 300);
-                }
-            }, 3000);
-        }
-
-        function showError(fieldId, message) {
-            const errorElement = document.getElementById(`${fieldId}Error`);
-            if (errorElement) {
-                errorElement.textContent = message;
-                errorElement.style.display = 'block';
-            }
-        }
-
-        function clearErrors() {
-            document.querySelectorAll('.error-message').forEach(el => {
-                el.style.display = 'none';
+            // Add to deposits collection
+            await db.collection('deposits').add({
+                uid: currentUser.uid,
+                username: userData?.fullName || currentUser.displayName || 'User',
+                email: currentUser.email,
+                amount: amount,
+                method: method,
+                screenshotUrl: cloudinaryReceiptUrl,
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
+
+            // Also add to transactions collection for user view
+            await db.collection('transactions').add(transactionData);
+
+            showToast('Deposit request submitted for review!', 'success');
+            
+            closeModal('depositModal');
+            resetDepositForm();
+
+        } catch (error) {
+            console.error('Deposit error:', error);
+            showToast('Failed to submit deposit', 'error');
+        } finally {
+            setLoading(btn, false);
+        }
+    }
+
+    // =====================
+    // WITHDRAWAL SYSTEM
+    // =====================
+    async function submitWithdraw() {
+        if (!currentUser) {
+            showToast('You must be logged in to withdraw', 'error');
+            return;
         }
 
-        function setLoading(button, isLoading) {
-            if (isLoading) {
-                button.classList.add('loading');
-                button.disabled = true;
-            } else {
-                button.classList.remove('loading');
-                button.disabled = false;
+        const amount = parseFloat(document.getElementById('withdrawAmount').value);
+        const method = document.getElementById('withdrawMethod').value;
+        const accountNumber = document.getElementById('accountNumber').value.trim();
+        const accountName = document.getElementById('accountName').value.trim();
+        const bankName = document.getElementById('bankName').value.trim();
+        const btn = document.getElementById('submitWithdrawBtn');
+
+        // Validation
+        clearErrors();
+        let isValid = true;
+
+        if (!amount || amount < 500) {
+            showError('withdrawAmount', 'Minimum withdrawal is 500 PKR');
+            isValid = false;
+        }
+
+        if (!accountNumber) {
+            showError('accountNumber', 'Account number is required');
+            isValid = false;
+        }
+
+        if (!accountName) {
+            showError('accountName', 'Account holder name is required');
+            isValid = false;
+        }
+
+        if (!isValid) return;
+
+        // Check account balance
+        const accountBalance = userData?.accountBalance || 0;
+
+        if (amount > accountBalance) {
+            showError('withdrawAmount', 'Insufficient account balance');
+            return;
+        }
+
+        setLoading(btn, true);
+
+        try {
+            const withdrawData = {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: userData?.fullName || currentUser.displayName || 'User',
+                type: 'withdraw',
+                method: method,
+                amount: amount,
+                accountDetails: {
+                    number: accountNumber,
+                    name: accountName,
+                    bank: bankName
+                },
+                status: 'pending',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+
+            // Add to transactions collection
+            await db.collection('transactions').add(withdrawData);
+
+            // Update user's account balance
+            await db.collection('users').doc(currentUser.uid).update({
+                accountBalance: firebase.firestore.FieldValue.increment(-amount),
+                totalWithdraw: firebase.firestore.FieldValue.increment(amount),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            showToast('Withdrawal request submitted for review!', 'success');
+            
+            closeModal('withdrawModal');
+            resetWithdrawForm();
+
+        } catch (error) {
+            console.error('Withdrawal error:', error);
+            showToast('Failed to submit withdrawal', 'error');
+        } finally {
+            setLoading(btn, false);
+        }
+    }
+
+    // =====================
+    // VIEW TRANSACTION DETAILS
+    // =====================
+    async function viewTransaction(transactionId) {
+        try {
+            const transaction = transactions.find(t => t.id === transactionId);
+            if (!transaction) return;
+
+            const date = transaction.timestamp?.toDate?.() || new Date();
+            const formattedDate = formatDate(date, true);
+
+            let detailsHtml = `
+                <div style="margin-bottom: 15px;">
+                    <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 10px;">Transaction Details</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Type</div>
+                            <div style="font-weight: 600;">${transaction.type === 'deposit' ? 'Deposit' : 'Withdrawal'}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Method</div>
+                            <div style="font-weight: 600;">${transaction.method || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Amount</div>
+                            <div style="font-weight: 600; color: ${transaction.type === 'deposit' ? 'var(--success)' : 'var(--danger)'}">
+                                ${transaction.type === 'deposit' ? '+' : '-'}${formatCurrency(transaction.amount || 0)} PKR
+                            </div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Status</div>
+                            <div class="transaction-status status-${transaction.status}" style="display: inline-block; margin-top: 5px;">
+                                ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                            </div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Date</div>
+                            <div style="font-weight: 600;">${formattedDate}</div>
+                        </div>
+                        <div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Reference</div>
+                            <div style="font-weight: 600; font-family: monospace; font-size: 0.8rem;">${transaction.reference || 'N/A'}</div>
+                        </div>
+                    </div>
+                </div>`;
+
+            if (transaction.notes) {
+                detailsHtml += `
+                    <div style="margin-bottom: 15px;">
+                        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 5px;">Notes</div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 0.85rem;">
+                            ${transaction.notes}
+                        </div>
+                    </div>`;
             }
+
+            document.getElementById('receiptDetails').innerHTML = detailsHtml;
+
+            if (transaction.screenshotUrl) {
+                document.getElementById('receiptImage').src = transaction.screenshotUrl;
+                document.getElementById('receiptImage').style.display = 'block';
+            } else {
+                document.getElementById('receiptImage').style.display = 'none';
+            }
+
+            openModal('receiptModal');
+        } catch (error) {
+            console.error('Error viewing transaction:', error);
+            showToast('Failed to load transaction details', 'error');
+        }
+    }
+
+    // =====================
+    // ACCOUNT FUNCTIONS
+    // =====================
+    function copyReferralLink() {
+        if (!currentUser) {
+            showToast('Please wait while we load your account', 'error');
+            return;
+        }
+        
+        const referralLink = `${window.location.origin}/register.html?ref=${currentUser.uid}`;
+        navigator.clipboard.writeText(referralLink).then(() => {
+            showToast('Referral link copied to clipboard!', 'success');
+        }).catch(() => {
+            showToast('Failed to copy link', 'error');
+        });
+    }
+
+    function openInvestmentHistory() {
+        showToast('Investment history feature coming soon!', 'info');
+    }
+
+    function showNotifications() {
+        const pending = transactions.filter(t => t.status === 'pending');
+        if (pending.length === 0) {
+            showToast('No pending notifications', 'info');
+            return;
         }
 
-        function resetDepositForm() {
-            document.getElementById('depositAmount').value = '';
-            document.getElementById('transactionId').value = '';
-            document.getElementById('depositNotes').value = '';
+        let message = `You have ${pending.length} pending transactions:\n\n`;
+        pending.forEach(t => {
+            message += `• ${t.type === 'deposit' ? 'Deposit' : 'Withdrawal'} of ${formatCurrency(t.amount)} PKR\n`;
+        });
+
+        showToast(message, 'info');
+    }
+
+    function openChangePassword() {
+        showToast('Password change feature coming soon!', 'info');
+    }
+
+    function viewAllTransactions() {
+        showToast('Full transaction history page coming soon!', 'info');
+    }
+
+    async function refreshWallet() {
+        const btn = document.getElementById('refreshWalletBtn');
+        setLoading(btn, true);
+        
+        if (currentUser) {
+            await loadUserData(currentUser.uid);
+            showToast('Account data updated!', 'success');
+        }
+        
+        setTimeout(() => {
+            setLoading(btn, false);
+        }, 1000);
+    }
+
+    // =====================
+    // LOGOUT
+    // =====================
+    async function logoutUser() {
+        try {
+            unsubscribeFunctions.forEach(unsubscribe => unsubscribe());
+            await auth.signOut();
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error('Logout error:', error);
+            showToast('Failed to logout', 'error');
+        }
+    }
+
+    // =====================
+    // MODAL FUNCTIONS
+    // =====================
+    function openModal(modalId) {
+        if (!currentUser) {
+            showToast('Please login first', 'error');
+            return;
+        }
+        
+        document.getElementById(modalId).classList.add('active');
+        if (modalId === 'depositModal') {
+            updatePaymentInfo();
+            updateCurrentAccountBalance();
             document.getElementById('receiptPreview').style.display = 'none';
             cloudinaryReceiptUrl = '';
+        } else if (modalId === 'withdrawModal') {
+            updateAccountBalanceInModal();
         }
+    }
 
-        function resetWithdrawForm() {
-            document.getElementById('withdrawAmount').value = '';
-            document.getElementById('accountNumber').value = '';
-            document.getElementById('accountName').value = '';
-            document.getElementById('bankName').value = '';
-        }
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
 
-        function formatCurrency(amount) {
-            return amount.toLocaleString('en-PK', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            });
-        }
+    function closeAllModals() {
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.classList.remove('active');
+        });
+    }
 
-        function formatDate(date, full = false) {
-            if (full) {
-                return date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+    function updateAccountBalanceInModal() {
+        if (!userData) return;
+        const balance = userData.accountBalance || 0;
+        document.getElementById('modalAccountBalance').textContent = formatCurrency(balance);
+    }
+
+    function updateCurrentAccountBalance() {
+        if (!userData) return;
+        const balance = userData.accountBalance || 0;
+        document.getElementById('currentAccountBalance').textContent = formatCurrency(balance);
+    }
+
+    // =====================
+    // UTILITY FUNCTIONS
+    // =====================
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            info: 'fa-info-circle'
+        };
+
+        toast.innerHTML = `
+            <i class="fas ${icons[type]}"></i>
+            <div style="flex: 1; margin-left: 10px;">
+                <div style="font-weight: 600; margin-bottom: 4px; font-size: 0.95rem;">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;">${message}</div>
+            </div>
+            <button class="modal-close" style="width: 28px; height: 28px; font-size: 1rem;" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+        document.getElementById('toastContainer').appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 300);
             }
+        }, 3000);
+    }
+
+    function showError(fieldId, message) {
+        const errorElement = document.getElementById(`${fieldId}Error`);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.style.display = 'none';
+        });
+    }
+
+    function setLoading(button, isLoading) {
+        if (isLoading) {
+            button.classList.add('loading');
+            button.disabled = true;
+        } else {
+            button.classList.remove('loading');
+            button.disabled = false;
+        }
+    }
+
+    function resetDepositForm() {
+        document.getElementById('depositAmount').value = '';
+        document.getElementById('transactionId').value = '';
+        document.getElementById('depositNotes').value = '';
+        document.getElementById('receiptPreview').style.display = 'none';
+        cloudinaryReceiptUrl = '';
+    }
+
+    function resetWithdrawForm() {
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('accountNumber').value = '';
+        document.getElementById('accountName').value = '';
+        document.getElementById('bankName').value = '';
+    }
+
+    function formatCurrency(amount) {
+        return amount.toLocaleString('en-PK', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function formatDate(date, full = false) {
+        if (full) {
             return date.toLocaleDateString('en-US', {
-                month: 'short',
+                year: 'numeric',
+                month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
             });
         }
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
 
-        function getColorFromName(name) {
-            const colors = ['#00ff88', '#6c63ff', '#8b5cf6', '#ec4899', '#f59e0b'];
-            const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            return colors[hash % colors.length];
-        }
-    </script>
+    function getColorFromName(name) {
+        const colors = ['#00ff88', '#6c63ff', '#8b5cf6', '#ec4899', '#f59e0b'];
+        const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return colors[hash % colors.length];
+    }
+</script>
 </body>
 </html>

@@ -231,14 +231,14 @@
 
         /* Hero Section */
         .hero {
-            padding: 80px 20px 40px;
+            padding: 60px 20px 30px;
             text-align: center;
             max-width: 800px;
             margin: 0 auto;
         }
 
         .brand-logo {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 800;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
@@ -248,18 +248,19 @@
         }
 
         .tagline {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: var(--text-secondary);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             line-height: 1.6;
+            padding: 0 10px;
         }
 
-        /* Features Section */
+        /* Features Section - RESPONSIVE FIX */
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            padding: 0 20px 50px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 0 20px 40px;
             max-width: 1000px;
             margin: 0 auto;
         }
@@ -267,12 +268,15 @@
         .feature-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 25px;
+            border-radius: 16px;
+            padding: 20px;
             text-align: center;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
         }
 
         .feature-card::before {
@@ -291,23 +295,158 @@
         }
 
         .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 15px;
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .feature-title {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .feature-desc {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
             line-height: 1.5;
+            margin-top: auto;
+        }
+
+        /* Active Users Card - IMPROVED TRUST SECTION */
+        .active-users-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .users-count-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .users-count {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 50, 50, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff3232;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .users-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .trust-line {
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .update-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        .mini-graph {
+            width: 100%;
+            height: 80px;
+            position: relative;
+            margin: 15px 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 6px;
+            padding: 0 8px;
+        }
+
+        .graph-bar {
+            width: 14px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            animation: barGrow 2s ease-out forwards;
+            opacity: 0;
+            transform-origin: bottom;
+        }
+
+        .graph-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(to top, transparent, rgba(255, 255, 255, 0.3));
+            border-radius: 4px 4px 0 0;
+        }
+
+        .graph-bar:nth-child(1) { height: 40px; animation-delay: 0.1s; }
+        .graph-bar:nth-child(2) { height: 55px; animation-delay: 0.2s; }
+        .graph-bar:nth-child(3) { height: 65px; animation-delay: 0.3s; }
+        .graph-bar:nth-child(4) { height: 80px; animation-delay: 0.4s; }
+        .graph-bar:nth-child(5) { height: 60px; animation-delay: 0.5s; }
+        .graph-bar:nth-child(6) { height: 75px; animation-delay: 0.6s; }
+        .graph-bar:nth-child(7) { height: 50px; animation-delay: 0.7s; }
+
+        @keyframes barGrow {
+            0% {
+                opacity: 0;
+                transform: scaleY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+        }
+
+        .graph-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-50%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
         }
 
         /* Auth Section */
@@ -323,7 +462,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid var(--card-border);
             border-radius: 24px;
-            padding: 35px 30px;
+            padding: 30px 25px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
@@ -342,7 +481,7 @@
 
         .auth-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             position: relative;
             z-index: 1;
         }
@@ -367,7 +506,7 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 14px;
             padding: 6px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             position: relative;
             border: 1px solid rgba(108, 99, 255, 0.1);
         }
@@ -410,7 +549,7 @@
         .form {
             display: none;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
             animation: fadeIn 0.5s ease-out;
         }
 
@@ -630,28 +769,65 @@
             margin-top: auto;
         }
 
-        /* Responsive */
+        /* RESPONSIVE FIXES - MOBILE OPTIMIZATION */
+        @media (max-width: 992px) {
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 18px;
+                padding: 0 20px 35px;
+            }
+            
+            .feature-card {
+                min-height: 260px;
+                padding: 18px;
+            }
+            
+            .users-count {
+                font-size: 2rem;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero {
-                padding: 60px 20px 30px;
+                padding: 50px 20px 25px;
             }
             
             .brand-logo {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
             }
             
             .tagline {
-                font-size: 1rem;
+                font-size: 0.95rem;
+                margin-bottom: 25px;
             }
             
             .features {
                 grid-template-columns: 1fr;
+                max-width: 400px;
+                gap: 16px;
                 padding: 0 20px 30px;
+            }
+            
+            .feature-card {
+                min-height: auto;
+                padding: 20px;
+            }
+            
+            .feature-title {
+                font-size: 1.1rem;
+            }
+            
+            .feature-desc {
+                font-size: 0.85rem;
+            }
+            
+            .users-count {
+                font-size: 1.8rem;
             }
             
             .form-row {
                 flex-direction: column;
-                gap: 20px;
+                gap: 18px;
             }
             
             .auth-card {
@@ -659,25 +835,110 @@
             }
             
             .auth-title {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
+            }
+            
+            .mini-graph {
+                height: 70px;
+            }
+            
+            .graph-bar {
+                width: 12px;
             }
         }
 
         @media (max-width: 480px) {
             .hero {
-                padding: 50px 15px 20px;
+                padding: 40px 15px 20px;
             }
             
             .brand-logo {
-                font-size: 2rem;
+                font-size: 1.8rem;
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+                padding: 0;
+            }
+            
+            .features {
+                padding: 0 15px 25px;
             }
             
             .feature-card {
-                padding: 20px;
+                padding: 18px;
+                border-radius: 14px;
+            }
+            
+            .feature-icon {
+                font-size: 1.8rem;
+                margin-bottom: 12px;
+            }
+            
+            .feature-title {
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+            
+            .feature-desc {
+                font-size: 0.8rem;
             }
             
             .btn {
                 padding: 14px 20px;
+                font-size: 0.95rem;
+            }
+            
+            .users-count {
+                font-size: 1.6rem;
+            }
+            
+            .users-label {
+                font-size: 0.8rem;
+            }
+            
+            .trust-line {
+                font-size: 0.8rem;
+            }
+            
+            .mini-graph {
+                height: 60px;
+                gap: 5px;
+            }
+            
+            .graph-bar {
+                width: 10px;
+            }
+            
+            .auth-card {
+                padding: 20px 18px;
+                border-radius: 20px;
+            }
+            
+            .auth-title {
+                font-size: 1.4rem;
+            }
+            
+            .auth-subtitle {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .brand-logo {
+                font-size: 1.6rem;
+            }
+            
+            .tagline {
+                font-size: 0.85rem;
+            }
+            
+            .feature-card {
+                padding: 16px;
+            }
+            
+            .users-count {
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -726,13 +987,39 @@
                 </p>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-users"></i>
+            <!-- Updated Third Card: Active Users - IMPROVED TRUST SECTION -->
+            <div class="feature-card active-users-card">
+                <div class="users-count-container">
+                    <div class="users-count">1,245,890+</div>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        <span>LIVE</span>
+                    </div>
                 </div>
-                <h3 class="feature-title">Referral Rewards</h3>
+                <div class="users-label">Active Users Worldwide</div>
+                
+                <div class="trust-line">
+                    Join thousands of users earning daily rewards
+                </div>
+                
+                <!-- Mini Animated Bar Graph -->
+                <div class="mini-graph">
+                    <div class="graph-line"></div>
+                    <div class="graph-bar"></div>
+                    <div class="graph-bar"></div>
+                    <div class="graph-bar"></div>
+                    <div class="graph-bar"></div>
+                    <div class="graph-bar"></div>
+                    <div class="graph-bar"></div>
+                    <div class="graph-bar"></div>
+                </div>
+                
+                <div class="update-time">
+                    <i class="fas fa-sync-alt"></i> Updated 2 mins ago
+                </div>
+                
                 <p class="feature-desc">
-                    Earn extra income by referring friends and building your network.
+                    Fastest growing investment community with proven returns.
                 </p>
             </div>
         </section>
@@ -939,11 +1226,13 @@
         const checkReferralBtn = document.getElementById('checkReferralBtn');
         const referralCodeInput = document.getElementById('referralCode');
 
-        // Global Variables
+        // Global Variables for Referral System
         let activeTab = 'login';
-        let referralData = null;
+        let referralData = null; // Stores referrer data
+        let referrerId = null; // Stores referrer UID
         let referralUsers = [];
         let referralValidationInProgress = false;
+        let referralAlreadyProcessed = false; // Prevents duplicate processing
 
         // Initialize application
         function init() {
@@ -1246,6 +1535,8 @@
                     }, 500);
                 } else {
                     hideReferralInfo();
+                    referralData = null;
+                    referrerId = null;
                 }
             });
         }
@@ -1254,6 +1545,8 @@
         async function checkReferralCode(code) {
             if (!code || code.length < 3) {
                 hideReferralInfo();
+                referralData = null;
+                referrerId = null;
                 return;
             }
 
@@ -1263,7 +1556,7 @@
             checkReferralBtn.disabled = true;
             
             try {
-                console.log('Checking referral code:', code.toUpperCase());
+                console.log('🔍 Checking referral code:', code.toUpperCase());
                 
                 const referralQuery = await db.collection('users')
                     .where('referralCode', '==', code.toUpperCase())
@@ -1272,12 +1565,17 @@
                 
                 if (!referralQuery.empty) {
                     const referrerDoc = referralQuery.docs[0];
+                    referrerId = referrerDoc.id;
                     referralData = {
-                        id: referrerDoc.id,
+                        id: referrerId,
                         ...referrerDoc.data()
                     };
                     
-                    console.log('Referral data found:', referralData);
+                    console.log('✅ Referral data found:', {
+                        referrerId: referrerId,
+                        referrerName: referralData.fullName,
+                        referralCode: referralData.referralCode
+                    });
                     
                     const referralsQuery = await db.collection('users')
                         .where('referredBy', '==', code.toUpperCase())
@@ -1290,9 +1588,11 @@
                     
                     showReferralInfo(referralData, referralUsers.length);
                     clearError('referralCode');
+                    showSuccess('referralCode', 'Valid referral code! You will receive a bonus.');
                 } else {
-                    console.log('No referral found for code:', code);
+                    console.log('❌ No referral found for code:', code);
                     referralData = null;
+                    referrerId = null;
                     referralUsers = [];
                     showError('referralCode', 'Invalid referral code');
                     hideReferralInfo();
@@ -1301,6 +1601,8 @@
                 console.error('Error checking referral code:', error);
                 showError('referralCode', 'Error validating referral code');
                 hideReferralInfo();
+                referralData = null;
+                referrerId = null;
             } finally {
                 referralValidationInProgress = false;
                 checkReferralBtn.disabled = false;
@@ -1329,7 +1631,7 @@
             document.getElementById('referrerName').textContent = `${referrer.fullName || 'User'}'s Team`;
             document.getElementById('referrerDetails').innerHTML = `
                 You're joining under <strong>${referrer.fullName || 'User'}</strong> (@${referrer.username || 'user'}). 
-                Get ₹100 bonus on successful registration!
+                Get bonus rewards on successful registration!
             `;
             
             document.getElementById('totalReferrals').textContent = referralCount;
@@ -1386,8 +1688,6 @@
                 `;
             }
             
-            clearError('referralCode');
-            showSuccess('referralCode', 'Valid referral code! You will receive a ₹100 bonus.');
             referralInfo.classList.add('active');
         }
 
@@ -1397,59 +1697,267 @@
             clearSuccess('referralCode');
         }
 
-        // Process referral
-        async function processReferral(referralCode, newUserId, newUserData) {
+        // Create referral record for tracking
+        async function createReferralRecord(referrerId, referredUserId, referralCode) {
             try {
-                console.log('Processing referral for code:', referralCode);
+                console.log('📝 Creating referral record...');
+                console.log('- Referrer ID:', referrerId);
+                console.log('- Referred User ID:', referredUserId);
+                console.log('- Referral Code:', referralCode);
                 
-                const referralQuery = await db.collection('users')
-                    .where('referralCode', '==', referralCode.toUpperCase())
-                    .get();
+                const referralRecord = {
+                    referrerId: referrerId,
+                    referredUserId: referredUserId,
+                    referralCode: referralCode,
+                    status: 'completed',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
                 
-                if (!referralQuery.empty) {
-                    const referrerDoc = referralQuery.docs[0];
-                    const referrerId = referrerDoc.id;
-                    const referrerData = referrerDoc.data();
-                    
-                    // Update referrer's stats
-                    await db.collection('users').doc(referrerId).update({
-                        totalReferrals: firebase.firestore.FieldValue.increment(1),
-                        activeReferrals: firebase.firestore.FieldValue.increment(1),
-                        referralEarnings: firebase.firestore.FieldValue.increment(100),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    // Create referral bonus transaction for referrer
-                    await db.collection('transactions').add({
-                        userId: referrerId,
-                        type: 'referral_bonus',
-                        amount: 100,
-                        status: 'completed',
-                        description: `Referral bonus for ${newUserData.fullName} (@${newUserData.username})`,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    // Create referral relationship record
-                    await db.collection('referrals').add({
-                        referrerId: referrerId,
-                        referredUserId: newUserId,
-                        referralCode: referralCode.toUpperCase(),
-                        referrerName: referrerData.fullName,
-                        referredUserName: newUserData.fullName,
-                        bonusAmount: 100,
-                        status: 'completed',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    console.log('Referral processed successfully');
-                    return true;
-                } else {
-                    console.log('Referral code not found in processReferral');
-                    return false;
-                }
+                await db.collection('referrals').add(referralRecord);
+                console.log('✅ Referral record created successfully');
+                return true;
             } catch (error) {
-                console.error('Error processing referral:', error);
+                console.error('❌ Error creating referral record:', error);
                 return false;
+            }
+        }
+
+        // Update referrer's stats
+        async function updateReferrerStats(referrerId, bonusAmount = 100) {
+            try {
+                console.log('🔄 Updating referrer stats for:', referrerId);
+                
+                // Update referrer's total referrals and balance
+                await db.collection('users').doc(referrerId).update({
+                    totalReferrals: firebase.firestore.FieldValue.increment(1),
+                    referralEarnings: firebase.firestore.FieldValue.increment(bonusAmount),
+                    accountBalance: firebase.firestore.FieldValue.increment(bonusAmount),
+                    balance: firebase.firestore.FieldValue.increment(bonusAmount),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Create transaction record for referrer
+                await db.collection('transactions').add({
+                    userId: referrerId,
+                    type: 'referral_bonus',
+                    amount: bonusAmount,
+                    status: 'completed',
+                    description: 'Referral bonus earned',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                console.log('✅ Referrer stats updated successfully');
+                return true;
+            } catch (error) {
+                console.error('❌ Error updating referrer stats:', error);
+                return false;
+            }
+        }
+
+        // Main Registration Handler with FIXED REFERRAL SYSTEM
+        async function handleRegisterSubmit(event) {
+            event.preventDefault();
+            console.log('=== REGISTRATION STARTED ===');
+            
+            // Prevent duplicate submissions
+            if (referralAlreadyProcessed) {
+                showToast('Registration already in progress', 'warning');
+                return;
+            }
+            
+            if (!validateRegisterForm()) {
+                showToast('Please fix the errors in the form', 'error');
+                return;
+            }
+            
+            const formData = {
+                fullName: document.getElementById('fullName').value.trim(),
+                username: document.getElementById('username').value.trim().toLowerCase(),
+                email: document.getElementById('email').value.trim().toLowerCase(),
+                phone: document.getElementById('phone').value.trim(),
+                password: document.getElementById('password').value.trim(),
+                referralCodeInput: document.getElementById('referralCode').value.trim().toUpperCase() || null
+            };
+            
+            console.log('📋 Form Data:', formData);
+            console.log('🔑 Referral Code Input:', formData.referralCodeInput);
+            console.log('🎯 Referrer ID from validation:', referrerId);
+            console.log('📊 Referral Data:', referralData);
+            
+            setLoading(registerBtn, true);
+            referralAlreadyProcessed = true;
+            
+            try {
+                // STEP 1: Validate if referral code is still valid (double-check)
+                let validReferralCode = null;
+                let finalReferrerId = null;
+                let userBonus = 50; // Default bonus without referral
+                
+                if (formData.referralCodeInput && formData.referralCodeInput.length >= 3 && referrerId) {
+                    console.log('🔍 Double-checking referral code:', formData.referralCodeInput);
+                    
+                    const doubleCheck = await db.collection('users')
+                        .where('referralCode', '==', formData.referralCodeInput)
+                        .limit(1)
+                        .get();
+                    
+                    if (!doubleCheck.empty) {
+                        const referrerDoc = doubleCheck.docs[0];
+                        if (referrerDoc.id === referrerId) {
+                            validReferralCode = formData.referralCodeInput;
+                            finalReferrerId = referrerId;
+                            userBonus = 100; // Bonus with valid referral
+                            console.log('✅ Referral code confirmed valid!');
+                        }
+                    }
+                }
+                
+                console.log('📊 Final referral decision:');
+                console.log('- Valid Referral Code:', validReferralCode);
+                console.log('- Referrer ID:', finalReferrerId);
+                console.log('- User Bonus:', userBonus);
+                
+                // STEP 2: Create Firebase Auth user
+                console.log('👤 Creating Firebase user...');
+                const userCredential = await auth.createUserWithEmailAndPassword(
+                    formData.email, 
+                    formData.password
+                );
+                
+                const user = userCredential.user;
+                console.log('✅ Firebase user created. UID:', user.uid);
+                
+                // STEP 3: Generate unique referral code for new user
+                const userReferralCode = await generateUniqueReferralCode(formData.username);
+                console.log('🎫 Generated user referral code:', userReferralCode);
+                
+                // STEP 4: Prepare user data - CRITICAL: Set referredBy field properly
+                const userData = {
+                    uid: user.uid,
+                    fullName: formData.fullName,
+                    name: formData.fullName,
+                    username: formData.username,
+                    email: formData.email,
+                    phone: formData.phone,
+                    referralCode: userReferralCode,
+                    
+                    // 🔥 FIXED: Always set referredBy field, never null
+                    referredBy: validReferralCode ? validReferralCode : "NO_REFERRAL",
+                    referredByUid: finalReferrerId ? finalReferrerId : null,
+                    referralCodeUsed: validReferralCode ? true : false,
+                    
+                    accountBalance: userBonus,
+                    balance: userBonus,
+                    totalReferrals: 0,
+                    activeReferrals: 0,
+                    referralEarnings: 0,
+                    totalDeposit: 0,
+                    totalWithdraw: 0,
+                    totalInvested: 0,
+                    totalEarnings: 0,
+                    totalProfit: 0,
+                    activeInvestments: 0,
+                    hasInvested: false,
+                    isActive: true,
+                    status: "active",
+                    investmentPlans: [],
+                    registrationDate: new Date().toISOString(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                console.log('💾 Saving user to Firestore...');
+                console.log('🔥 referredBy field:', userData.referredBy);
+                console.log('🔥 referredByUid field:', userData.referredByUid);
+                console.log('🔥 referralCodeUsed field:', userData.referralCodeUsed);
+                
+                // STEP 5: Save user to Firestore
+                await db.collection('users').doc(user.uid).set(userData);
+                console.log('✅ User saved to Firestore');
+                
+                // STEP 6: Process referral if valid
+                if (validReferralCode && finalReferrerId) {
+                    console.log('🎯 Processing referral...');
+                    
+                    try {
+                        // 6a: Create referral tracking record
+                        await createReferralRecord(finalReferrerId, user.uid, validReferralCode);
+                        
+                        // 6b: Update referrer's stats
+                        await updateReferrerStats(finalReferrerId, 100);
+                        
+                        console.log('✅ Referral processing completed');
+                    } catch (error) {
+                        console.error('⚠️ Referral processing had issues, but user created:', error);
+                        // Continue even if referral processing has issues
+                    }
+                }
+                
+                // STEP 7: Create signup bonus transaction for new user
+                await db.collection('transactions').add({
+                    userId: user.uid,
+                    type: 'signup_bonus',
+                    amount: userBonus,
+                    status: 'completed',
+                    description: validReferralCode ? 
+                        `Welcome bonus with referral code ${validReferralCode}` : 
+                        'Welcome bonus for new account',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                console.log('✅ User transaction created');
+                
+                // STEP 8: Create referral stats for new user
+                await db.collection('referralStats').doc(user.uid).set({
+                    totalReferrals: 0,
+                    activeReferrals: 0,
+                    totalEarnings: 0,
+                    todayEarnings: 0,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                console.log('✅ User referral stats created');
+                
+                // STEP 9: Show success message
+                const successMsg = validReferralCode ? 
+                    `🎉 Account created successfully! You received 100 PKR bonus using referral code ${validReferralCode}` :
+                    `🎉 Account created successfully! You received 50 PKR welcome bonus`;
+                
+                showToast(successMsg, 'success');
+                console.log('=== REGISTRATION COMPLETED SUCCESSFULLY ===');
+                console.log('👤 User UID:', user.uid);
+                console.log('🎫 User referral code:', userReferralCode);
+                console.log('🔗 User referredBy:', userData.referredBy);
+                console.log('👥 User referredByUid:', userData.referredByUid);
+                
+                // STEP 10: Redirect to profile
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 2000);
+                
+            } catch (error) {
+                console.error('❌ Registration error:', error);
+                referralAlreadyProcessed = false;
+                
+                let errorMessage = 'An error occurred during registration.';
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'This email is already registered.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email address.';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'Password is too weak. Use at least 8 characters.';
+                        break;
+                    default:
+                        errorMessage = error.message || 'Unknown error occurred';
+                }
+                
+                showToast(errorMessage, 'error');
+            } finally {
+                setLoading(registerBtn, false);
             }
         }
 
@@ -1505,222 +2013,6 @@
                 showToast(errorMessage, 'error');
             } finally {
                 setLoading(loginBtn, false);
-            }
-        }
-
-        // Registration handler - FIXED VERSION
-        async function handleRegisterSubmit(event) {
-            event.preventDefault();
-            
-            console.log('=== REGISTRATION START ===');
-            
-            if (!validateRegisterForm()) {
-                showToast('Please fix the errors in the form', 'error');
-                console.log('Form validation failed');
-                return;
-            }
-            
-            const formData = {
-                fullName: document.getElementById('fullName').value.trim(),
-                username: document.getElementById('username').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                password: document.getElementById('password').value.trim(),
-                referralCode: document.getElementById('referralCode').value.trim().toUpperCase() || null
-            };
-            
-            console.log('Form data:', formData);
-            console.log('Referral data available:', !!referralData);
-            
-            if (formData.referralCode) {
-                console.log('Referral code entered:', formData.referralCode);
-            }
-            
-            setLoading(registerBtn, true);
-            
-            try {
-                // Create Firebase Auth user
-                console.log('Creating Firebase Auth user...');
-                const userCredential = await auth.createUserWithEmailAndPassword(
-                    formData.email, 
-                    formData.password
-                );
-                
-                const user = userCredential.user;
-                console.log('Firebase user created with ID:', user.uid);
-                
-                // Generate referral code for new user
-                const userReferralCode = await generateUniqueReferralCode(formData.username);
-                console.log('Generated user referral code:', userReferralCode);
-                
-                // Determine bonus and referredBy
-                let bonusAmount = 50; // Default
-                let referredByValue = null;
-                
-                // Check if referral is valid
-                if (formData.referralCode && referralData && referralData.id) {
-                    console.log('Valid referral detected. Setting bonus to 100 and referredBy:', formData.referralCode);
-                    referredByValue = formData.referralCode;
-                    bonusAmount = 100;
-                } else {
-                    console.log('No valid referral. Using default bonus 50');
-                }
-                
-                // Create user data for Firestore
-                const userData = {
-                    uid: user.uid,
-                    fullName: formData.fullName,
-                    username: formData.username,
-                    email: formData.email,
-                    phone: formData.phone,
-                    referralCode: userReferralCode,
-                    referredBy: referredByValue, // THIS IS THE KEY FIELD
-                    accountBalance: bonusAmount,
-                    totalReferrals: 0,
-                    activeReferrals: 0,
-                    referralEarnings: 0,
-                    totalDeposit: 0,
-                    totalWithdraw: 0,
-                    totalInvested: 0,
-                    totalEarnings: 0,
-                    totalProfit: 0,
-                    isActive: true,
-                    status: "active",
-                    investmentPlans: [],
-                    registrationDate: new Date().toISOString(),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                console.log('Saving user data to Firestore:', userData);
-                
-                // Save user to Firestore
-                await db.collection('users').doc(user.uid).set(userData);
-                console.log('User saved to Firestore successfully');
-                
-                // Process referral if applicable
-                if (formData.referralCode && referralData && referralData.id) {
-                    console.log('Processing referral bonus...');
-                    try {
-                        // Update referrer's stats
-                        await db.collection('users').doc(referralData.id).update({
-                            totalReferrals: firebase.firestore.FieldValue.increment(1),
-                            activeReferrals: firebase.firestore.FieldValue.increment(1),
-                            referralEarnings: firebase.firestore.FieldValue.increment(100),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        console.log('Referrer stats updated for:', referralData.id);
-                        
-                        // Create transactions
-                        // Referrer bonus
-                        await db.collection('transactions').add({
-                            userId: referralData.id,
-                            type: 'referral_bonus',
-                            amount: 100,
-                            status: 'completed',
-                            description: `Referral bonus for ${formData.fullName} (@${formData.username})`,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        
-                        // New user bonus (referral version)
-                        await db.collection('transactions').add({
-                            userId: user.uid,
-                            type: 'signup_bonus',
-                            amount: 100,
-                            status: 'completed',
-                            description: `Welcome bonus with referral code ${formData.referralCode}`,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        
-                        // Record referral relationship
-                        await db.collection('referrals').add({
-                            referrerId: referralData.id,
-                            referredUserId: user.uid,
-                            referralCode: formData.referralCode,
-                            referrerName: referralData.fullName || 'Unknown',
-                            referredUserName: formData.fullName,
-                            bonusAmount: 100,
-                            status: 'completed',
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        
-                        console.log('Referral processing completed');
-                    } catch (referralError) {
-                        console.error('Error in referral processing:', referralError);
-                        // Fallback to standard bonus
-                        bonusAmount = 50;
-                        await db.collection('users').doc(user.uid).update({
-                            accountBalance: 50,
-                            referredBy: null
-                        });
-                        
-                        // Create standard bonus transaction
-                        await db.collection('transactions').add({
-                            userId: user.uid,
-                            type: 'signup_bonus',
-                            amount: 50,
-                            status: 'completed',
-                            description: 'Welcome bonus for new account',
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    }
-                } else {
-                    // No referral - standard bonus
-                    console.log('No referral, creating standard bonus transaction');
-                    await db.collection('transactions').add({
-                        userId: user.uid,
-                        type: 'signup_bonus',
-                        amount: 50,
-                        status: 'completed',
-                        description: 'Welcome bonus for new account',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-                
-                // Create referral stats
-                await db.collection('referralStats').doc(user.uid).set({
-                    totalReferrals: 0,
-                    activeReferrals: 0,
-                    totalEarnings: 0,
-                    todayEarnings: 0,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                const bonusMessage = bonusAmount === 100 ? 
-                    `Welcome to INVITEGAIN! Account created with ₹100 bonus (referral code used).` : 
-                    `Welcome to INVITEGAIN! Account created with ₹50 bonus.`;
-                
-                showToast(bonusMessage, 'success');
-                console.log('Registration successful!');
-                
-                setTimeout(() => {
-                    redirectToProfile();
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Registration error:', error);
-                
-                let errorMessage = 'An error occurred during registration.';
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'This email is already registered.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address.';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Password is too weak. Please use a stronger password.';
-                        break;
-                    case 'auth/operation-not-allowed':
-                        errorMessage = 'Email/password accounts are not enabled.';
-                        break;
-                    default:
-                        errorMessage = error.message;
-                }
-                
-                showToast(errorMessage, 'error');
-            } finally {
-                setLoading(registerBtn, false);
             }
         }
 
